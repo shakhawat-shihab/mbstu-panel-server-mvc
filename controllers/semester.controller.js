@@ -1,14 +1,17 @@
 const Marks = require("../models/Marks");
 const { updateMarksFromSemesterUpdate, createMarksService } = require("../services/marks.service");
-const { createSemesterService, findSemesterService, updateSemesterService, getStudentsWithCoursesService } = require("../services/semester.service");
+const { createSemesterService, findSemesterService, updateSemesterService, getStudentsWithCoursesService, getCoursesPreviousRunningSemesterService } = require("../services/semester.service");
 const { getStudentOfPreviousSemesterService } = require("../services/studentsResult.service");
 
 
 exports.createSemester = async (req, res, next) => {
     try {
-        // console.log(req.body);
-        const findSemesterResult = await findSemesterService(req.body)
+        const { courses, ...otherInfo } = req.body;
 
+        // 1
+        const findSemesterResult = await findSemesterService({ semesterCode: otherInfo.semesterCode, session: otherInfo.session })
+
+        //2
         if (findSemesterResult) {
             return res.status(400).json({
                 status: "fail",
@@ -16,41 +19,53 @@ exports.createSemester = async (req, res, next) => {
             });
         }
 
+        //3
+        // create semester
+        const semester = await createSemesterService(otherInfo);
+
+        //4
+        //add previous semester students
+        const studentProfileIds = await getStudentOfPreviousSemesterService(req?.body?.semesterCode - 1);
+        // console.log('studentProfileIds  ', studentProfileIds);
+        const previousSemesterStudentsWithCourse = []
+        let previousSemesterStudents = []
+        studentProfileIds.map(x => {
+            const obj = {}
+            obj.id = x.id
+            obj.studentProfileId = x.studentProfile;
+            previousSemesterStudents.push(obj)
+            // obj.coursesMarksList = [...arrOfCoursesObjectId];
+            // previousSemesterStudentsWithCourse.push(obj);
+            // console.log('obj ', obj);
+        })
+
+
+        //5
         // add courses of the semester
-        const { courses, ...otherInfo } = req.body;
         const arrOfCoursesObjectId = []
-        const marks = []
         let results = courses.map(async (x) => {
+            x.semesterId = semester._id;
+            x.studentsMarks = previousSemesterStudents;
             const result = await createMarksService(x);
             //const { courseCode, courseTitle, teacher, _id: courseMarksId } = result;
             // const obj = { courseCode, courseTitle, teacher, courseMarks }
             // console.log('obj === ', obj)
             arrOfCoursesObjectId.push(result?._id);
-            marks.push(result);
         })
         results = await Promise.all(results)
 
 
-        //add previous semester students
-        const studentProfileIds = await getStudentOfPreviousSemesterService(req?.body?.semesterCode - 1);
-        // console.log('studentProfileIds  ', studentProfileIds);
-        const previousSemesterStudents = []
-        studentProfileIds.map(x => {
-            const obj = {}
-            obj.studentId = x.studentProfile;
-            obj.coursesMarksList = [...arrOfCoursesObjectId];
-            previousSemesterStudents.push(obj);
-            // console.log('obj ', obj);
-        })
-        const semester = { courses: [...arrOfCoursesObjectId], studentsCourses: [...previousSemesterStudents], ...otherInfo };
-        // console.log('semester  ', semester);
+        //6
+        // add course code to each of the students of previous semester
+        previousSemesterStudents = previousSemesterStudents.map(obj => ({ ...obj, coursesMarksList: [...arrOfCoursesObjectId] }))
+        // console.log(previousSemesterStudents)
 
 
-        const output = await createSemesterService(semester);
+        //7
+        const data = { courses: [...arrOfCoursesObjectId], studentsCourses: [...previousSemesterStudents] }
+        semester.setCoursesAndStudentsCourses(data)
+        await semester.save({ validateBeforeSave: false });
 
-
-        Marks.setMarks
-        await user.save({ validateBeforeSave: false });
 
         res.status(200).json({
             status: "success",
@@ -130,8 +145,6 @@ exports.getStudentsWithCourses = async (req, res, next) => {
             message: "Successfully loaded student and their taken courses",
             data: result
         });
-
-
     } catch (error) {
         res.status(400).json({
             status: "fail",
@@ -141,4 +154,22 @@ exports.getStudentsWithCourses = async (req, res, next) => {
     }
 }
 
+
+exports.getCoursesPreviousRunningSemester = async (req, res, next) => {
+    try {
+        const { semesterCode } = req.params;
+        const result = await getCoursesPreviousRunningSemesterService(semesterCode);
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully loaded student and their taken courses",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load student and their taken courses",
+            error: error.message,
+        });
+    }
+}
 

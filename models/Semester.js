@@ -25,7 +25,8 @@ const semesterSchema = mongoose.Schema({
         ref: "marks"
     }],
     studentsCourses: [{
-        studentId: {
+        id: String,
+        studentProfileId: {
             type: ObjectId,
             ref: 'profile'
         },
@@ -35,6 +36,10 @@ const semesterSchema = mongoose.Schema({
         }]
 
     }],
+    isRunning: {
+        type: Boolean,
+        default: true
+    }
 
 
 }, {
@@ -42,6 +47,11 @@ const semesterSchema = mongoose.Schema({
 })
 
 
+
+semesterSchema.methods.setCoursesAndStudentsCourses = function (data) {
+    this.studentsCourses = data.studentsCourses;
+    this.courses = data.courses
+};
 
 
 

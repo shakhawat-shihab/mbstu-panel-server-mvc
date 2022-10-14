@@ -29,10 +29,10 @@ const marksSchema = mongoose.Schema({
     studentsMarks: [{
         name: String,
         id: String,
-        studentProfile: {
+        studentProfileId: {
             type: ObjectId,
             ref: "profile",
-            required: true,
+            // required: true,
         },
         marks: {
             type: Number

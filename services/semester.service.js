@@ -18,7 +18,14 @@ exports.updateSemesterService = async (id, semester) => {
 exports.getStudentsWithCoursesService = async (semesterId) => {
     // const result = await Semester.find({ _id: semesterId }).select('studentCourses').populate({ path: 'studentCourses.studentId', select: 'id name' });
     const result = await Semester.find({ _id: semesterId }).select('studentsCourses')
-        .populate({ path: 'studentsCourses.studentId', select: 'id name' })
+        .populate({ path: 'studentsCourses.studentProfileId', select: 'id name' })
         .populate({ path: 'studentsCourses.coursesMarksList', select: 'courseTitle -_id courseCode' })
+    return result;
+}
+exports.getCoursesPreviousRunningSemesterService = async (semesterCode) => {
+    // const result = await Semester.find({ _id: semesterId }).select('studentCourses').populate({ path: 'studentCourses.studentId', select: 'id name' });
+    const result = await Semester.find({ semesterCode: { $lt: semesterCode }, isRunning: true }).select('courses')
+        .populate({ path: 'courses', select: 'courseTitle _id courseCode' })
+    // .populate({ path: 'studentsCourses.coursesMarksList', select: 'courseTitle -_id courseCode' })
     return result;
 }
