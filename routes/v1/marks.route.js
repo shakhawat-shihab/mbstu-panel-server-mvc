@@ -1,11 +1,10 @@
 const express = require("express");
-const { updateMarks } = require("../../controllers/marks.controller");
-const semesterController = require("../../controllers/semester.controller");
+const marksController = require("../../controllers/marks.controller");
 
 const router = express.Router();
 
 
-router.patch('/course-teacher', updateMarks);
+router.get('/update-marks/:id', marksController.updateMarks);
 
 
 // router.get('/:id', );

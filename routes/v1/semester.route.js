@@ -6,9 +6,10 @@ const verifyToken = require("../../middleware/verifyToken");
 const router = express.Router();
 
 
-router.get('/getPreviousSemesterStudent/:semesterCode', getStudentOfPreviousSemester);
+
 
 router.post('/', semesterController.createSemester);
+router.get('/students-courses/:semesterId', semesterController.getStudentsWithCourses);
 router.patch('/semester-info/:semesterId', semesterController.updateSemester);
 //courseId will be courseMarks ref to marks
 router.patch('/semester-course/:courseMarks', semesterController.updateSemesterCourse);

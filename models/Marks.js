@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const { ObjectId } = mongoose.Schema.Types;
 const marksSchema = mongoose.Schema({
-
     courseCode: {
         type: String,
         trim: true,
@@ -24,6 +23,9 @@ const marksSchema = mongoose.Schema({
         // minLength: 3,
         maxLength: 100,
     },
+    semesterId: {
+        type: ObjectId
+    },
     studentsMarks: [{
         name: String,
         id: String,
@@ -40,6 +42,11 @@ const marksSchema = mongoose.Schema({
 }, {
     timestamps: true
 })
+
+// for mail verification
+marksSchema.methods.setSemester = function (id) {
+    this.semesterId = ObjectId(id);
+};
 
 
 

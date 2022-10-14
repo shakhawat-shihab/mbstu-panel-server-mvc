@@ -1,4 +1,4 @@
-const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService } = require("../services/user.service");
+const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService } = require("../services/user.service");
 const User = require("../models/User");
 const { generateToken } = require("../utils/token");
 const { sendMailWithGmail } = require("../utils/email");
@@ -127,7 +127,7 @@ exports.logIn = async (req, res, next) => {
 exports.getMe = async (req, res, next) => {
     try {
         const { user } = req;
-        const userAllInfo = await findUserByEmailExceptPasswordService(user?.email);
+        const userAllInfo = await findUserLikeEmailExceptPasswordService(user?.email);
         res.status(200).json({
             status: "success",
             message: "Successfully logged in",
@@ -186,12 +186,11 @@ exports.confirmEmail = async (req, res) => {
         const profileResult = await createProfileService(profile);
         // console.log(' profileResult ', profileResult)
 
-        //student result create
+        // student result create
         if (student) {
             const studentResult = await createStudentResultService({ id: user.email.substring(0, 7), studentProfile: profileResult?._id, semesterCode: 1 });
             // console.log(' studentResult ', studentResult)
         }
-
 
         user.status = "active";
         user.confirmationToken = undefined;
@@ -212,3 +211,68 @@ exports.confirmEmail = async (req, res) => {
         });
     }
 };
+
+
+// exports.findUserByEmail = async (req, res, next) => {
+//     try {
+//         const { email } = req.params;
+//         const user = await findUserByEmailExceptPasswordService(email);
+//         res.status(200).json({
+//             status: "success",
+//             message: "Loaded the users",
+//             data: user
+//         });
+//     } catch (error) {
+//         res.status(400).json({
+//             status: "fail",
+//             message: "Failed to load",
+//             error: error.message,
+//         });
+//     }
+// }
+
+exports.findUserLikeEmail = async (req, res, next) => {
+    try {
+        const { email } = req.params;
+        const user = await findUserLikeEmailExceptPasswordService(email);
+        res.status(200).json({
+            status: "success",
+            message: "Loaded the users",
+            data: user
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
+
+
+
+
+
+exports.addTeacher = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const result = await addTeacherService(userId);
+        if (result?.modifiedCount) {
+            return res.status(200).json({
+                status: "success",
+                message: "Successfully added teacher",
+            });
+        }
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add Teacher",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add Teacher",
+            error: error.message,
+        });
+    }
+}

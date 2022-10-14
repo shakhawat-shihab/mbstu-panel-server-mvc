@@ -27,7 +27,7 @@ const semesterSchema = mongoose.Schema({
     studentsCourses: [{
         studentId: {
             type: ObjectId,
-            ref: 'proile'
+            ref: 'profile'
         },
         coursesMarksList: [{
             type: ObjectId,
@@ -40,6 +40,8 @@ const semesterSchema = mongoose.Schema({
 }, {
     timestamps: true
 })
+
+
 
 
 

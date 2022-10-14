@@ -6,7 +6,6 @@ exports.getUserService = async () => {
     return users;
 }
 exports.signUpService = async (user) => {
-
     const result = await User.create(user);
     return result;
 }
@@ -26,7 +25,19 @@ exports.findUserByEmailExceptPasswordService = async (email) => {
         .populate('profile');
     return user;
 }
+exports.findUserLikeEmailExceptPasswordService = async (email) => {
+    let regExp = new RegExp(email);
+    const user = await User.find({ "email": regExp })
+        .select('-password')
+        .populate('profile');
+    return user;
+}
 
 exports.findUserByToken = async (token) => {
     return await User.findOne({ confirmationToken: token });
 };
+
+exports.addTeacherService = async (_id) => {
+    const result = await User.updateOne({ _id }, { $set: { isTeacher: true } })
+    return result;
+}

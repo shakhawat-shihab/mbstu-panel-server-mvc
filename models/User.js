@@ -45,6 +45,9 @@ const userSchema = mongoose.Schema({
     isStudent: {
         type: Boolean,
     },
+    isTeacher: {
+        type: Boolean,
+    },
     status: {
         type: String,
         enum: ['active', 'inactive', 'blocked'],

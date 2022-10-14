@@ -8,5 +8,6 @@ router.get("/signup/confirmation/:token", userController.confirmEmail);
 router.post('/signup', userController.signUp);
 router.post('/login', userController.logIn);
 router.get('/me', verifyToken, userController.getMe);
-
+router.get('/email/:email', userController.findUserLikeEmail);
+router.patch('/addTeacher/:userId', userController.addTeacher);
 module.exports = router;
