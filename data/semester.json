@@ -1,0 +1,20 @@
+[
+    {
+        "name": "1-2",
+        "semesterCode": 2,
+        "session": "2016-17",
+        "department": "cse",
+        "courses": [
+            {
+                "courseCode": "cse0001",
+                "courseTitle": "ai",
+                "teacher": "lubna yeasmin"
+            },
+            {
+                "courseCode": "cse0002",
+                "courseTitle": "dos",
+                "teacher": "delwar hossain"
+            }
+        ]
+    }
+]
