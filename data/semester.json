@@ -26,12 +26,18 @@
             {
                 "courseCode": "cse1201",
                 "courseTitle": "SP",
-                "teacher": "Mehedi hasan"
+                "teacher": {
+                    "name": "Sultan Ahammad",
+                    "teacherProfileId": "634a984876cc7a06dbd62e4e"
+                }
             },
             {
                 "courseCode": "cse1203",
                 "courseTitle": "DS",
-                "teacher": "Mahfuz reza"
+                "teacher": {
+                    "name": "Shakhawat Hossain",
+                    "teacherProfileId": "6347ea22944ec2ef5adb6ff5"
+                }
             }
         ]
     }

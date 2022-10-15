@@ -20,6 +20,7 @@ const semesterSchema = mongoose.Schema({
         type: String,
         required: true
     },
+
     courses: [{
         type: ObjectId,
         ref: "marks"
