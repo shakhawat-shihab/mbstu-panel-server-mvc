@@ -9,11 +9,12 @@ const router = express.Router();
 
 
 router.post('/', semesterController.createSemester);
-router.get('/students-courses/:semesterId', semesterController.getStudentsWithCourses);
+
 router.patch('/semester-info/:semesterId', semesterController.updateSemester);
 //courseId will be courseMarks ref to marks
 router.patch('/semester-course/:courseMarks', semesterController.updateSemesterCourse);
-
 router.get('/courses/:semesterCode', semesterController.getCoursesPreviousRunningSemester);
+
+
 
 module.exports = router;

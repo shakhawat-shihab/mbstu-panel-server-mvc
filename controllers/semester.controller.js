@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const { updateMarksFromSemesterUpdate, createMarksService } = require("../services/marks.service");
-const { createSemesterService, findSemesterService, updateSemesterService, getStudentsWithCoursesService, getCoursesPreviousRunningSemesterService } = require("../services/semester.service");
+const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService } = require("../services/semester.service");
 const { getStudentOfPreviousSemesterService } = require("../services/studentsResult.service");
 
 
@@ -55,14 +55,14 @@ exports.createSemester = async (req, res, next) => {
         results = await Promise.all(results)
 
 
-        //6
-        // add course code to each of the students of previous semester
-        previousSemesterStudents = previousSemesterStudents.map(obj => ({ ...obj, coursesMarksList: [...arrOfCoursesObjectId] }))
-        // console.log(previousSemesterStudents)
+        // //6
+        // // add course code to each of the students of previous semester
+        // previousSemesterStudents = previousSemesterStudents.map(obj => ({ ...obj, coursesMarksList: [...arrOfCoursesObjectId] }))
+        // // console.log(previousSemesterStudents)
 
 
         //7
-        const data = { courses: [...arrOfCoursesObjectId], studentsCourses: [...previousSemesterStudents] }
+        const data = { courses: [...arrOfCoursesObjectId] }
         semester.setCoursesAndStudentsCourses(data)
         await semester.save({ validateBeforeSave: false });
 
@@ -136,23 +136,23 @@ exports.updateSemesterCourse = async (req, res, next) => {
     }
 }
 
-exports.getStudentsWithCourses = async (req, res, next) => {
-    try {
-        const { semesterId } = req.params;
-        const result = await getStudentsWithCoursesService(semesterId);
-        return res.status(200).json({
-            status: "success",
-            message: "Successfully loaded student and their taken courses",
-            data: result
-        });
-    } catch (error) {
-        res.status(400).json({
-            status: "fail",
-            message: "Failed to load student and their taken courses",
-            error: error.message,
-        });
-    }
-}
+// exports.getStudentsWithCourses = async (req, res, next) => {
+//     try {
+//         const { semesterId } = req.params;
+//         const result = await getStudentsWithCoursesService(semesterId);
+//         return res.status(200).json({
+//             status: "success",
+//             message: "Successfully loaded student and their taken courses",
+//             data: result
+//         });
+//     } catch (error) {
+//         res.status(400).json({
+//             status: "fail",
+//             message: "Failed to load student and their taken courses",
+//             error: error.message,
+//         });
+//     }
+// }
 
 
 exports.getCoursesPreviousRunningSemester = async (req, res, next) => {
@@ -172,4 +172,6 @@ exports.getCoursesPreviousRunningSemester = async (req, res, next) => {
         });
     }
 }
+
+
 
