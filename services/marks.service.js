@@ -20,7 +20,11 @@ exports.getMarksService = async (_id) => {
 
 exports.getMarksCourseTeacherService = async (_id) => {
     // console.log(data);
-    const result = await Marks.find({ _id }).select('theoryFinal').populate('studentsMarks.studentProfileId');
+    const result = await Marks.find({ _id })
+        .select('studentsMarks.id studentsMarks.theoryFinal studentsMarks.studentProfileId')
+        .populate({ path: 'studentsMarks.studentProfileId', select: 'name ' })
+
+    // .select('theoryFinal');
     // if(result.teacher.teacherprofileId==myId){
     //     //return marks
     // }

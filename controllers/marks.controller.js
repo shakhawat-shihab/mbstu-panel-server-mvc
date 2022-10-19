@@ -7,18 +7,19 @@ const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseT
 exports.getMarksCourseTeacher = async (req, res, next) => {
     try {
         //marks gula load korea ante hbe
-        console.log(req.params.id)
-        const marksOfACourse = await getMarksCourseTeacherService(req.params.id)
+        // console.log(req.params.courseMarksId)
+        const marksOfACourse = await getMarksCourseTeacherService(req.params.courseMarksId);
+
         res.status(200).json({
             status: "success",
-            message: "Successfully created the Semester",
+            message: "Successfully loaded",
             data: marksOfACourse
         });
 
     } catch (error) {
         res.status(400).json({
             status: "fail",
-            message: "Failed to create the Semester",
+            message: "Failed to load",
             error: error.message,
         });
     }
