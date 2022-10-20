@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const { updateMarksFromSemesterUpdate, createMarksService } = require("../services/marks.service");
-const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService } = require("../services/semester.service");
+const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService, getMarksOfCurrentSemesterService } = require("../services/semester.service");
 const { getStudentOfPreviousSemesterService } = require("../services/studentsResult.service");
 
 
@@ -168,6 +168,24 @@ exports.getCoursesPreviousRunningSemester = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to load student and their taken courses",
+            error: error.message,
+        });
+    }
+}
+
+exports.getMarksOfCurrentSemester = async (req, res, next) => {
+    try {
+        const { semesterId } = req.params;
+        const result = await getMarksOfCurrentSemesterService(semesterId);
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully loaded student and their marks",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load student and their marks",
             error: error.message,
         });
     }

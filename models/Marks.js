@@ -16,6 +16,9 @@ const marksSchema = mongoose.Schema({
         // minLength: 3,
         maxLength: 100,
     },
+    credit: {
+        type: Number,
+    },
     type: {
         type: String,
         enum: ['theory', 'lab', 'project']

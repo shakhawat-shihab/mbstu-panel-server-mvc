@@ -15,6 +15,8 @@ router.patch('/semester-info/:semesterId', semesterController.updateSemester);
 router.patch('/semester-course/:courseMarks', semesterController.updateSemesterCourse);
 router.get('/courses/:semesterCode', semesterController.getCoursesPreviousRunningSemester);
 
+router.get('/marks-of-all-course/:semesterId', semesterController.getMarksOfCurrentSemester);
+
 
 
 module.exports = router;
