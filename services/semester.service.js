@@ -40,36 +40,29 @@ exports.getMarksOfCurrentSemesterService = async (semesterId) => {
             $in: semester.courses
         }
     })
-    // const mark = await Marks.aggregate([
-    //     {
-    //         $match: {
-    //             "_id": {
-    //                 $in: semester.courses
-    //             }
-    //         }
-    //     },
-    //     {
-    //         $project: {
-    //             _id: 1,
-    //             courseTitle: 1,
-    //             teacher: 1,
-    //             studentsMarks: 1
-    //         }
-    //     },
-    //     // //stage 1
-    //     // { $in: courses },
-    //     // //stage 2
-    //     // {
-    //     //     $project: {
-    //     //         store: 1,
-    //     //         price: { $convert: { input: '$price', to: 'int' } },
-    //     //         quantity: 1
-    //     //     }
-    //     // },
-    //     // //stage 3
-    //     // { $group: { _id: _id, totalProductsPrice: { $sum: { $multiply: ['$price', '$quantity'] } } } }
-    //     { $group: { _id: '$studentsMarks.studentProfileId', totalProductsPrice: { $sum: '$theoryFinal' } } }
-    // ])
-
-    return marks;
+    const mark = await Marks.aggregate([
+        {
+            $match: {
+                "_id": {
+                    $in: semester.courses
+                }
+            }
+        },
+        {
+            $unwind: "$studentsMarks"
+        },
+        {
+            $group: {
+                _id: "$studentsMarks.id",
+                marksArray: {
+                    $push: {
+                        courseCode: "$courseCode",
+                        courseTitle: "$courseTitle",
+                        marks: "$studentsMarks.theoryFinal"
+                    }
+                }
+            }
+        }
+    ])
+    return mark;
 }

@@ -33,6 +33,16 @@ const marksSchema = mongoose.Schema({
             ref: "profile",
         }
     },
+    secondExamineer: {
+        name: {
+            type: String,
+            trim: true,
+        },
+        teacherProfileId: {
+            type: ObjectId,
+            ref: "profile",
+        }
+    },
     semesterId: {
         type: ObjectId
     },

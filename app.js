@@ -8,6 +8,7 @@ const userRoute = require("./routes/v1/user.route");
 const semesterRoute = require("./routes/v1/semester.route");
 const marksRoute = require("./routes/v1/marks.route");
 const studentResult = require("./routes/v1/studentResult.route");
+const verifyToken = require("./middleware/verifyToken");
 
 
 //middlewares
@@ -17,7 +18,7 @@ app.use(cors());
 //routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/semester", semesterRoute);
-app.use("/api/v1/marks", marksRoute);
+app.use("/api/v1/marks", verifyToken, marksRoute);
 app.use("/api/v1/student-result", studentResult);
 
 

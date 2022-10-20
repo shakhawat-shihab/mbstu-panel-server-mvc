@@ -18,15 +18,33 @@ exports.getMarksService = async (_id) => {
     return result;
 }
 
-exports.getMarksCourseTeacherService = async (_id) => {
-    // console.log(data);
-    const result = await Marks.find({ _id })
-        .select('studentsMarks.id studentsMarks.theoryFinal studentsMarks.studentProfileId')
-        .populate({ path: 'studentsMarks.studentProfileId', select: 'name ' })
+exports.getTypeOfACourseService = async (_id) => {
+    const type = await Marks.findOne({ _id }).select('type')
+    return type;
+}
 
-    // .select('theoryFinal');
-    // if(result.teacher.teacherprofileId==myId){
-    //     //return marks
+
+exports.getMarksCourseTeacherService = async (_id, type = null) => {
+    let result;
+    if (type == 'theory') {
+        result = await Marks.findOne({ _id })
+            .select('studentsMarks.id teacher studentsMarks.theoryAttendance studentsMarks.theoryCT1 studentsMarks.theoryCT2 studentsMarks.theoryCT3 studentsMarks.theoryFinal studentsMarks.studentProfileId')
+            .populate({ path: 'studentsMarks.studentProfileId', select: 'name ' })
+    }
+    else {
+        result = await Marks.findOne({ _id })
+            .select('teacher')
+    }
+    return result;
+}
+
+exports.getMarksSecondExamineerService = async (_id) => {
+    // console.log(data);
+    let result;
+    // if (type == 'theory') {
+    result = await Marks.findOne({ _id })
+        .select('studentsMarks.id secondExamineer studentsMarks.theorySecondExamineer studentsMarks.studentProfileId')
+        .populate({ path: 'studentsMarks.studentProfileId', select: 'name' })
     // }
     return result;
 }
@@ -37,11 +55,17 @@ exports.updateMarksFromSemesterUpdate = async (id, info) => {
     return result;
 }
 
-exports.updateMarksCourseTeacherService = async (id, info) => {
-    console.log(id, info)
+exports.updateMarksService = async (id, info) => {
+    // console.log(id, info)
     const result = await Marks.updateOne({ _id: id }, { $set: { studentsMarks: info } });
     return result;
 }
+
+exports.getAllMarksOfStudentsOfACourseService = async (courseMarksId) => {
+    const result = await Marks.findOne({ _id: courseMarksId });
+    return result;
+}
+
 exports.addStudentService = async (data) => {
     // //console.log(data)
 

@@ -1,21 +1,27 @@
 const e = require("express");
-const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService } = require("../services/marks.service");
+const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, getMarksSecondExamineerService, updateMarksService } = require("../services/marks.service");
 
 
 
 
 exports.getMarksCourseTeacher = async (req, res, next) => {
     try {
-        //marks gula load korea ante hbe
+        const user = req.user;
         // console.log(req.params.courseMarksId)
-        const marksOfACourse = await getMarksCourseTeacherService(req.params.courseMarksId);
-
+        const type = await getTypeOfACourseService(req.params.courseMarksId);
+        const marksOfACourse = await getMarksCourseTeacherService(req.params.courseMarksId, type.type);
+        // console.log(marksOfACourse)
+        if (user.profile != marksOfACourse.teacher[`teacherProfileId`]) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
         res.status(200).json({
             status: "success",
             message: "Successfully loaded",
             data: marksOfACourse
         });
-
     } catch (error) {
         res.status(400).json({
             status: "fail",
@@ -27,23 +33,58 @@ exports.getMarksCourseTeacher = async (req, res, next) => {
 
 
 
+exports.getMarksSecondExamineer = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const marksOfACourse = await getMarksSecondExamineerService(req.params.courseMarksId);
+        // console.log(marksOfACourse)
+        if (user.profile != marksOfACourse.secondExamineer[`teacherProfileId`]) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        res.status(200).json({
+            status: "success",
+            message: "Successfully loaded",
+            data: marksOfACourse
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
+
+
 exports.updateMarksCourseTeacher = async (req, res, next) => {
     try {
-        //marks gula load korea ante hbe
+        const user = req.user;
         const { courseMarksId } = req.params;
+        const marksOfACourse = await getMarksCourseTeacherService(courseMarksId);
+        // console.log(marksOfACourse);
+        if (user.profile != marksOfACourse.teacher[`teacherProfileId`]) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        //marks gula load korea ante hbe
         const allmarksOfACourse = await getMarksService(courseMarksId);
 
         const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
             const inputObject = req.body.marks.find(x => {
                 return x.id == student.id
             })
-            if (inputObject?.[`${req.body.propertyName}`]) {
+            if (inputObject?.[`${req.body.propertyName} `]) {
                 student[`${req.body.propertyName}`] = inputObject[`${req.body.propertyName}`]
             }
             return student;
         })
         console.log(updatedData)
-        const result = await updateMarksCourseTeacherService(courseMarksId, updatedData)
+        const result = await updateMarksService(courseMarksId, updatedData)
 
         res.status(200).json({
             status: "success",
@@ -59,6 +100,52 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
         });
     }
 }
+
+
+exports.updateMarksSecondExamineer = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { courseMarksId } = req.params;
+        const marksOfACourse = await getMarksSecondExamineerService(courseMarksId);
+        if (user.profile != marksOfACourse.secondExamineer[`teacherProfileId`]) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        //marks gula load korea ante hbe
+        const allmarksOfACourse = await getMarksService(courseMarksId);
+
+        const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
+            const inputObject = req.body.marks.find(x => {
+                return x.id == student.id
+            })
+            if (inputObject?.theorySecondExamineer) {
+                student.theorySecondExamineer = inputObject.theorySecondExamineer
+            }
+            return student;
+        })
+        console.log(updatedData)
+        const result = await updateMarksService(courseMarksId, updatedData)
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully added marks",
+            data: result
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add marks",
+            error: error.message,
+        });
+    }
+}
+
+
+
+
 
 // addStudent will call when chairman approve an application
 exports.addStudent = async (req, res, next) => {
@@ -127,3 +214,24 @@ exports.addPaymentInfo = async (req, res, next) => {
         });
     }
 }
+
+
+exports.getAllMarksOfStudentsOfACourse = async (req, res, next) => {
+    try {
+        const { courseMarksId } = req.params;
+        const result = await getAllMarksOfStudentsOfACourseService(courseMarksId)
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully loaded marks of the course",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load marks of the course",
+            error: error.message,
+        });
+    }
+}
+
+

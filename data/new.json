@@ -1,0 +1,32 @@
+[
+    {
+        "id": "ce17001",
+        "marksArray": [
+            {
+                "courseCode": "cse1201",
+                "courseTitle": "Structured Programming",
+                "marks": 52
+            },
+            {
+                "courseCode": "cse1202",
+                "courseTitle": "Data structer",
+                "marks": 50
+            }
+        ]
+    },
+    {
+        "id": "ce17002",
+        "marksArray": [
+            {
+                "courseCode": "cse1201",
+                "courseTitle": "Structured Programming",
+                "marks": 45
+            },
+            {
+                "courseCode": "cse1202",
+                "courseTitle": "Data structer",
+                "marks": 61
+            }
+        ]
+    }
+]

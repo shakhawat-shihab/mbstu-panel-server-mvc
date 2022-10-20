@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken')
 exports.generateToken = (userInfo) => {
+    // console.log(userInfo);
     const payload = {
         id: userInfo?._id,
+        profile: userInfo?.profile,
         fullname: userInfo?.firstName + ' ' + userInfo?.lastName,
         email: userInfo?.email,
         isStudent: userInfo?.isStudent,
