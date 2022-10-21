@@ -14,6 +14,9 @@ const courseSchema = mongoose.Schema({
         minLength: 3,
         maxLength: 100,
     }],
+    credit: {
+        type: Number
+    },
     category: {
         type: String,
         enum: ['compoulsary', 'optional'],
