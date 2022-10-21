@@ -16,7 +16,7 @@ exports.logInService = async (logInInfo) => {
 }
 
 exports.findUserByEmailService = async (email) => {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).populate('profile')
     return user;
 }
 exports.findUserByEmailExceptPasswordService = async (email) => {

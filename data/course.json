@@ -1,0 +1,28 @@
+[
+    {
+        "courseCode": "CSE2107",
+        "courseTitle": [
+            "Mathematics III ( Matrix, vector, Special Function )"
+        ],
+        "category": "compoulsary",
+        "semesterCode": 3,
+        "department": "cse",
+        "departmental": "non departmental",
+        "relatedDepartment": [
+            "math"
+        ],
+        "type": "theory"
+    },
+    {
+        "courseCode": "CSE4205",
+        "courseTitle": [
+            "Distributed Operating System",
+            "Simulation and Modeling"
+        ],
+        "category": "compoulsary",
+        "semesterCode": 3,
+        "department": "cse",
+        "departmental": "department",
+        "type": "theory"
+    }
+]
