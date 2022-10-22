@@ -4,6 +4,14 @@ const { ObjectId } = mongoose.Schema.Types;
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 const userSchema = mongoose.Schema({
+    firstName: {
+        type: String,
+        trim: true,
+    },
+    lastName: {
+        type: String,
+        trim: true,
+    },
     email: {
         type: String,
         trim: true,

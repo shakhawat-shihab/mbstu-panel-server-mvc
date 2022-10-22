@@ -43,8 +43,19 @@ const marksSchema = mongoose.Schema({
             ref: "profile",
         }
     },
+    thirdExamineer: {
+        name: {
+            type: String,
+            trim: true,
+        },
+        teacherProfileId: {
+            type: ObjectId,
+            ref: "profile",
+        }
+    },
     semesterId: {
-        type: ObjectId
+        type: ObjectId,
+        ref: "semester",
     },
 
     studentsMarks: [{
@@ -60,32 +71,47 @@ const marksSchema = mongoose.Schema({
         },
         theoryAttendance: {
             type: Number,
-
+            max: 10
         },
         theoryCT1: {
             type: Number,
-
         },
         theoryCT2: {
             type: Number,
-
         },
         theoryCT3: {
             type: Number,
-
         },
         theoryFinal: {
             type: Number,
-
+            max: 70
         },
         theorySecondExamineer: {
             type: Number,
-
+            max: 70
         },
         theoryThirdExamineer: {
             type: Number,
-
+            max: 70
         },
+        labAttendance: {
+            type: Number,
+            max: 15
+        },
+        labReport: {
+            type: Number,
+            max: 15
+        },
+        labQuiz: {
+            type: Number,
+            max: 30
+        },
+        labExperiment: {
+            type: Number,
+            max: 40
+        },
+
+
         isPaid: {
             type: Boolean,
             default: false

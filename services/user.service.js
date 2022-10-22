@@ -37,7 +37,14 @@ exports.findUserByToken = async (token) => {
     return await User.findOne({ confirmationToken: token });
 };
 
-exports.addTeacherService = async (_id) => {
-    const result = await User.updateOne({ _id }, { $set: { isTeacher: true } })
+exports.addTeacherService = async (_id, department) => {
+    const result = await User.updateOne({ _id }, { $set: { isTeacher: true, department: department } })
+    return result;
+}
+exports.getTeacherByDeptService = async (queries) => {
+    // console.log(queries);
+    const result = await User.find({ isTeacher: true, department: { $in: queries?.departmentArray } })
+        .select('email department profile')
+        .populate('profile');
     return result;
 }

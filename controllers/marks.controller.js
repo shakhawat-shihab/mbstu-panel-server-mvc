@@ -1,7 +1,5 @@
 const e = require("express");
-const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, getMarksSecondExamineerService, updateMarksService } = require("../services/marks.service");
-
-
+const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, getMarksSecondExamineerService, updateMarksService, getTakenCoursesService } = require("../services/marks.service");
 
 
 exports.getMarksCourseTeacher = async (req, res, next) => {
@@ -10,8 +8,9 @@ exports.getMarksCourseTeacher = async (req, res, next) => {
         // console.log(req.params.courseMarksId)
         const type = await getTypeOfACourseService(req.params.courseMarksId);
         const marksOfACourse = await getMarksCourseTeacherService(req.params.courseMarksId, type.type);
-        // console.log(marksOfACourse)
-        if (user.profile != marksOfACourse.teacher[`teacherProfileId`]) {
+        //console.log(marksOfACourse.teacher[`teacherProfileId`])
+        // console.log(user.profileId)
+        if (user.profileId != marksOfACourse.teacher[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
@@ -38,7 +37,7 @@ exports.getMarksSecondExamineer = async (req, res, next) => {
         const user = req.user;
         const marksOfACourse = await getMarksSecondExamineerService(req.params.courseMarksId);
         // console.log(marksOfACourse)
-        if (user.profile != marksOfACourse.secondExamineer[`teacherProfileId`]) {
+        if (user.profileId != marksOfACourse.secondExamineer[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
@@ -63,9 +62,9 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
     try {
         const user = req.user;
         const { courseMarksId } = req.params;
+        const { propertyName } = req.body;
         const marksOfACourse = await getMarksCourseTeacherService(courseMarksId);
-        // console.log(marksOfACourse);
-        if (user.profile != marksOfACourse.teacher[`teacherProfileId`]) {
+        if (user.profileId != marksOfACourse.teacher[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
@@ -73,17 +72,17 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
         }
         //marks gula load korea ante hbe
         const allmarksOfACourse = await getMarksService(courseMarksId);
-
         const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
             const inputObject = req.body.marks.find(x => {
                 return x.id == student.id
             })
-            if (inputObject?.[`${req.body.propertyName} `]) {
-                student[`${req.body.propertyName}`] = inputObject[`${req.body.propertyName}`]
+            // console.log('inputObject == ', inputObject)
+            if (inputObject?.[`${propertyName}`]) {
+                student[`${propertyName}`] = inputObject?.[`${propertyName}`]
             }
             return student;
         })
-        console.log(updatedData)
+        // console.log(updatedData)
         const result = await updateMarksService(courseMarksId, updatedData)
 
         res.status(200).json({
@@ -107,7 +106,9 @@ exports.updateMarksSecondExamineer = async (req, res, next) => {
         const user = req.user;
         const { courseMarksId } = req.params;
         const marksOfACourse = await getMarksSecondExamineerService(courseMarksId);
-        if (user.profile != marksOfACourse.secondExamineer[`teacherProfileId`]) {
+        // console.log(marksOfACourse.teacher[`teacherProfileId`])
+        // console.log(user.profileId)
+        if (user.profileId != marksOfACourse.secondExamineer[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
@@ -125,7 +126,7 @@ exports.updateMarksSecondExamineer = async (req, res, next) => {
             }
             return student;
         })
-        console.log(updatedData)
+        // console.log(updatedData)
         const result = await updateMarksService(courseMarksId, updatedData)
 
         res.status(200).json({
@@ -229,6 +230,24 @@ exports.getAllMarksOfStudentsOfACourse = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to load marks of the course",
+            error: error.message,
+        });
+    }
+}
+
+exports.getTakenCourses = async (req, res, next) => {
+    try {
+        const { state, profileId } = req.params;
+        const result = await getTakenCoursesService(profileId, state)
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully loaded taken courses",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load taken courses",
             error: error.message,
         });
     }

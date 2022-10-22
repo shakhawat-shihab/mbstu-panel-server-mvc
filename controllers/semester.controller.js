@@ -45,8 +45,8 @@ exports.createSemester = async (req, res, next) => {
         const arrOfCoursesObjectId = []
         let results = courses.map(async (x) => {
             x.semesterId = semester._id;
-            x.teacherProfileId = req.body.teacher;
             x.studentsMarks = previousSemesterStudents;
+            // console.log(x);
             const result = await createMarksService(x);
             //const { courseCode, courseTitle, teacher, _id: courseMarksId } = result;
             // const obj = { courseCode, courseTitle, teacher, courseMarks }
@@ -63,7 +63,7 @@ exports.createSemester = async (req, res, next) => {
 
 
         //7
-        const data = { courses: [...arrOfCoursesObjectId] }
+        const data = { coursesMarks: [...arrOfCoursesObjectId] }
         semester.setCoursesAndStudentsCourses(data)
         await semester.save({ validateBeforeSave: false });
 

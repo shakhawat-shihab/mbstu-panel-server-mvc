@@ -7,14 +7,17 @@ const router = express.Router();
 router.patch('/course-registration', marksController.addStudent)
 router.patch('/course-registration/payment-complete', marksController.addPaymentInfo)
 
-router.get('/get-marks/course-teacher/:courseMarksId', marksController.getMarksCourseTeacher);
-router.get('/get-marks/second-examineer/:courseMarksId', marksController.getMarksSecondExamineer);
+router.get('/get-marks/course-teacher/:courseMarksId', verifyToken, marksController.getMarksCourseTeacher);
+router.get('/get-marks/second-examineer/:courseMarksId', verifyToken, marksController.getMarksSecondExamineer);
 router.get('/get-marks/third-examineer/:courseMarksId', marksController.getMarksCourseTeacher);
 
-router.patch('/update-marks/course-teacher/:courseMarksId', marksController.updateMarksCourseTeacher);
-router.patch('/update-marks/second-examineer/:courseMarksId', marksController.updateMarksSecondExamineer);
+router.patch('/update-marks/course-teacher/:courseMarksId', verifyToken, marksController.updateMarksCourseTeacher);
+router.patch('/update-marks/second-examineer/:courseMarksId', verifyToken, marksController.updateMarksSecondExamineer);
 
 router.get('/get-marks/exam-committe/:courseMarksId', marksController.getAllMarksOfStudentsOfACourse);
+
+// state=1 (course Teacher)   //state=2 second examineer   //state=3 (third examineer)
+router.get('/taken-courses/:profileId/:state', marksController.getTakenCourses);
 
 
 // router.get('/:id', );

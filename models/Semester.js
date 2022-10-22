@@ -20,23 +20,36 @@ const semesterSchema = mongoose.Schema({
         type: String,
         required: true
     },
-
-    courses: [{
+    degree: {
+        type: String,
+        required: true
+    },
+    coursesMarks: [{
         type: ObjectId,
         ref: "marks"
     }],
-    studentsCourses: [{
-        id: String,
-        studentProfileId: {
-            type: ObjectId,
-            ref: 'profile'
-        },
-        coursesMarksList: [{
-            type: ObjectId,
-            ref: 'marks'
-        }]
-
+    examCommittee: [{
+        // ProfileId: {
+        type: ObjectId,
+        ref: 'profile'
+        // }
     }],
+    examCommitteeChairman: {
+        type: ObjectId,
+        ref: 'profile'
+    },
+    // studentsCourses: [{
+    //     id: String,
+    //     studentProfileId: {
+    //         type: ObjectId,
+    //         ref: 'profile'
+    //     },
+    //     coursesMarksList: [{
+    //         type: ObjectId,
+    //         ref: 'marks'
+    //     }]
+
+    // }],
     isRunning: {
         type: Boolean,
         default: true
@@ -50,8 +63,8 @@ const semesterSchema = mongoose.Schema({
 
 
 semesterSchema.methods.setCoursesAndStudentsCourses = function (data) {
-    this.studentsCourses = data.studentsCourses;
-    this.courses = data.courses
+    // this.studentsCourses = data.studentsCourses;
+    this.coursesMarks = data.coursesMarks
 };
 
 

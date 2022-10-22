@@ -11,7 +11,8 @@
         "relatedDepartment": [
             "math"
         ],
-        "type": "theory"
+        "type": "theory",
+        "credit": 3
     },
     {
         "courseCode": "CSE4205",
@@ -23,6 +24,7 @@
         "semesterCode": 3,
         "department": "cse",
         "departmental": "department",
-        "type": "theory"
+        "type": "theory",
+        "credit": 3
     }
 ]

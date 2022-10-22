@@ -1,4 +1,4 @@
-const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService } = require("../services/user.service");
+const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService } = require("../services/user.service");
 const User = require("../models/User");
 const { generateToken } = require("../utils/token");
 const { sendMailWithGmail } = require("../utils/email");
@@ -28,7 +28,6 @@ exports.getUser = async (req, res, next) => {
 exports.signUp = async (req, res, next) => {
     try {
         const user = await signUpService(req.body);
-
         const token = user.generateConfirmationToken();
         await user.save({ validateBeforeSave: false });
         // const mailData = {
@@ -42,13 +41,13 @@ exports.signUp = async (req, res, next) => {
 
         res.status(200).json({
             status: "success",
-            message: "Successfully signed up",
+            message: "Successfully signed up.",
         });
 
     } catch (error) {
         res.status(400).json({
             status: "fail",
-            message: "Failed to sign up!! ",
+            message: "Failed to sign up!",
             error: error.message,
         });
     }
@@ -74,7 +73,7 @@ exports.logIn = async (req, res, next) => {
         if (!email || !password) {
             return res.status(401).json({
                 status: "fail",
-                error: "Enter email and password",
+                message: "Enter email and password",
             });
         }
         //2
@@ -83,7 +82,7 @@ exports.logIn = async (req, res, next) => {
         if (!user) {
             return res.status(401).json({
                 status: "fail",
-                error: "No User with this email",
+                message: "No User with this email",
             });
         }
         //4
@@ -92,14 +91,14 @@ exports.logIn = async (req, res, next) => {
         if (!checkPassword) {
             return res.status(403).json({
                 status: "fail",
-                error: "Wrong password inserted",
+                message: "Wrong password inserted",
             });
         }
         //6
         if (user?.status !== 'active') {
             return res.status(401).json({
                 status: "fail",
-                error: "Your account is not active yet.",
+                message: "Your account is not active yet.",
             });
         }
         //7
@@ -174,17 +173,21 @@ exports.confirmEmail = async (req, res) => {
             profile.id = id;
             profile.session = session;
             profile.email = user.email;
+            profile.firstName = user?.firstName;
+            profile.lastName = user?.lastName;
             //user
             user.department = idCodeToDept(id);
             user.isStudent = true;
         }
         else {
             profile.email = user.email;
+            profile.firstName = user?.firstName;
+            profile.lastName = user?.lastName;
         }
 
         //profile create
         const profileResult = await createProfileService(profile);
-        // console.log(' profileResult ', profileResult)
+
 
         // student result create
         if (student) {
@@ -193,6 +196,8 @@ exports.confirmEmail = async (req, res) => {
         }
 
         user.status = "active";
+        user.firstName = undefined;
+        user.lastName = undefined;
         user.confirmationToken = undefined;
         user.confirmationTokenExpires = undefined;
         user.profile = profileResult._id;
@@ -204,7 +209,7 @@ exports.confirmEmail = async (req, res) => {
             message: "Successfully activated your account.",
         });
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(500).json({
             status: "fail",
             error,
@@ -256,7 +261,8 @@ exports.findUserLikeEmail = async (req, res, next) => {
 exports.addTeacher = async (req, res, next) => {
     try {
         const { userId } = req.params;
-        const result = await addTeacherService(userId);
+        const { department } = req.user;
+        const result = await addTeacherService(userId, department);
         if (result?.modifiedCount) {
             return res.status(200).json({
                 status: "success",
@@ -267,6 +273,31 @@ exports.addTeacher = async (req, res, next) => {
             status: "fail",
             message: "Failed to add Teacher",
         });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add Teacher",
+            error: error.message,
+        });
+    }
+}
+
+exports.getTeacherByDept = async (req, res, next) => {
+    try {
+        const queries = {}
+        if (req.query.fields) {
+            let fieldsArray = req.query.fields.split(',');
+            queries.departmentArray = fieldsArray
+        }
+        // console.log(queries);
+        const data = await getTeacherByDeptService(queries);
+        res.status(200).json({
+            status: "success",
+            message: "Successfully loaded teacher",
+            data: data
+        });
+
 
     } catch (error) {
         res.status(400).json({

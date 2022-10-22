@@ -28,12 +28,13 @@ exports.getMarksCourseTeacherService = async (_id, type = null) => {
     let result;
     if (type == 'theory') {
         result = await Marks.findOne({ _id })
-            .select('studentsMarks.id teacher studentsMarks.theoryAttendance studentsMarks.theoryCT1 studentsMarks.theoryCT2 studentsMarks.theoryCT3 studentsMarks.theoryFinal studentsMarks.studentProfileId')
-            .populate({ path: 'studentsMarks.studentProfileId', select: 'name ' })
+            .select('studentsMarks.id teacher type courseTitle courseCode credit studentsMarks.theoryAttendance studentsMarks.theoryCT1 studentsMarks.theoryCT2 studentsMarks.theoryCT3 studentsMarks.theoryFinal studentsMarks.studentProfileId')
+            .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
     }
-    else {
+    else if (type == 'lab') {
         result = await Marks.findOne({ _id })
-            .select('teacher')
+            .select('studentsMarks.id teacher studentsMarks.labAttendance studentsMarks.labReport studentsMarks.labQuiz studentsMarks.labExperiment  studentsMarks.studentProfileId')
+            .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
     }
     return result;
 }
@@ -62,7 +63,26 @@ exports.updateMarksService = async (id, info) => {
 }
 
 exports.getAllMarksOfStudentsOfACourseService = async (courseMarksId) => {
+
     const result = await Marks.findOne({ _id: courseMarksId });
+    return result;
+}
+
+exports.getTakenCoursesService = async (profileId, state) => {
+    let result;
+    if (state == 1) {
+        result = await Marks.find({ 'teacher.teacherProfileId': profileId })
+            .populate({ path: 'semesterId', select: 'name session' })
+            .sort('semesterId.session')
+    }
+    else if (state == 2) {
+        result = await Marks.find({ 'teacher.secondExamineer': profileId })
+            .populate({ path: 'semesterId', select: 'name session semesterCode' })
+            .sort(-'semesterId.semesterCode')
+    }
+    else if (state == 3) {
+        result = await Marks.find({ 'teacher.thirdExamineer': profileId })
+    }
     return result;
 }
 

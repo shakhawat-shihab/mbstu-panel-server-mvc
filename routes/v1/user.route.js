@@ -9,6 +9,7 @@ router.post('/signup', userController.signUp);
 router.post('/login', userController.logIn);
 router.get('/me', verifyToken, userController.getMe);
 router.get('/email/:email', userController.findUserLikeEmail);
-router.patch('/addTeacher/:userId', userController.addTeacher);
+router.patch('/addTeacher/:userId', verifyToken, userController.addTeacher);
+router.get('/teacher', userController.getTeacherByDept);
 
 module.exports = router;

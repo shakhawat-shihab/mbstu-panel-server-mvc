@@ -4,6 +4,6 @@ const verifyToken = require("../../middleware/verifyToken");
 const router = express.Router();
 
 router.post('/create', courseController.createCourse);
-// router.post('/update', courseController.updateCourse);
+router.get('/:semesterCode', courseController.getCoursesBySemesterCode);
 
 module.exports = router;
