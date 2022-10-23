@@ -56,6 +56,9 @@ const userSchema = mongoose.Schema({
     isTeacher: {
         type: Boolean,
     },
+    isDeptChairman: {
+        type: Boolean,
+    },
     status: {
         type: String,
         enum: ['active', 'inactive', 'blocked'],
@@ -65,6 +68,14 @@ const userSchema = mongoose.Schema({
         type: ObjectId,
         ref: "profile",
         // required: true,
+    },
+    hall: {
+        name: {
+            type: String
+        },
+        hallId: {
+            type: ObjectId
+        }
     },
     confirmationToken: String,
     confirmationTokenExpires: Date,

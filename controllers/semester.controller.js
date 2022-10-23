@@ -25,6 +25,7 @@ exports.createSemester = async (req, res, next) => {
 
         //4
         //add previous semester students
+        //eikhane dept o pass korte hbe
         const studentProfileIds = await getStudentOfPreviousSemesterService(req?.body?.semesterCode - 1);
         // console.log('studentProfileIds  ', studentProfileIds);
         // const previousSemesterStudentsWithCourse = []

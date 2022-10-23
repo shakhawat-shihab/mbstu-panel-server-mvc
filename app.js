@@ -10,6 +10,7 @@ const marksRoute = require("./routes/v1/marks.route");
 const studentResultRoute = require("./routes/v1/studentResult.route");
 const verifyToken = require("./middleware/verifyToken");
 const courseRoute = require("./routes/v1/course.route");
+const hallRoute = require("./routes/v1/hall.route");
 
 
 //middlewares
@@ -22,6 +23,7 @@ app.use("/api/v1/semester", semesterRoute);
 app.use("/api/v1/marks", marksRoute);
 app.use("/api/v1/student-result", studentResultRoute);
 app.use("/api/v1/course", courseRoute);
+app.use("/api/v1/hall", hallRoute);
 
 
 

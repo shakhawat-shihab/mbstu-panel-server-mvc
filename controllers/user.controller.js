@@ -1,10 +1,11 @@
-const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService } = require("../services/user.service");
+const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService } = require("../services/user.service");
 const User = require("../models/User");
 const { generateToken } = require("../utils/token");
 const { sendMailWithGmail } = require("../utils/email");
 const { createProfileService } = require("../services/profile.service");
 const { idCodeToDept } = require("../functions/convertFunction");
 const { createStudentResultService } = require("../services/studentsResult.service");
+const { findStudentInhallServic, findStudentInhallService } = require("../services/hall.service");
 
 
 exports.getUser = async (req, res, next) => {
@@ -185,12 +186,16 @@ exports.confirmEmail = async (req, res) => {
             profile.lastName = user?.lastName;
         }
 
+
         //profile create
         const profileResult = await createProfileService(profile);
 
 
         // student result create
         if (student) {
+            const getHall = await findStudentInhallService(user.email.substring(0, 7));
+            const obj = { name: getHall.name, hallId: getHall._id }
+            user.hall = obj;
             const studentResult = await createStudentResultService({ id: user.email.substring(0, 7), studentProfile: profileResult?._id, semesterCode: 1 });
             // console.log(' studentResult ', studentResult)
         }
@@ -283,6 +288,32 @@ exports.addTeacher = async (req, res, next) => {
     }
 }
 
+exports.addDeptChairman = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const { department } = req.user;
+        const result = await addDeptChairmanService(userId, department);
+        if (result?.modifiedCount) {
+            return res.status(200).json({
+                status: "success",
+                message: "Successfully added chairman",
+            });
+        }
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add chairman",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add chairman",
+            error: error.message,
+        });
+    }
+}
+
+
 exports.getTeacherByDept = async (req, res, next) => {
     try {
         const queries = {}
@@ -297,8 +328,6 @@ exports.getTeacherByDept = async (req, res, next) => {
             message: "Successfully loaded teacher",
             data: data
         });
-
-
     } catch (error) {
         res.status(400).json({
             status: "fail",

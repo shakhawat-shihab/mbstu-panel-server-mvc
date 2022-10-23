@@ -9,9 +9,10 @@ exports.generateToken = (userInfo) => {
         department: userInfo?.department,
         isStudent: userInfo?.isStudent,
         isTeacher: userInfo?.isTeacher,
-
+        isDeptChairman: userInfo?.isDeptChairman,
     }
-    // crypto.randomBytes(64).toString('hex')  = process.env.TOKEN_SECRET
+    // console.log('TOKEN_SECRET ', process.env.TOKEN_SECRET);
+    // crypto.randomBytes(64).toString('hex')  => process.env.TOKEN_SECRET
     const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
         expiresIn: '10h'
     })

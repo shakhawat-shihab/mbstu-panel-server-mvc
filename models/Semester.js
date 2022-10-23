@@ -48,7 +48,6 @@ const semesterSchema = mongoose.Schema({
     //         type: ObjectId,
     //         ref: 'marks'
     //     }]
-
     // }],
     isRunning: {
         type: Boolean,

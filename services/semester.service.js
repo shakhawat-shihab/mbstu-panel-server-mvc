@@ -25,9 +25,32 @@ exports.updateSemesterService = async (id, semester) => {
 // }
 exports.getCoursesPreviousRunningSemesterService = async (semesterCode) => {
     // const result = await Semester.find({ _id: semesterId }).select('studentCourses').populate({ path: 'studentCourses.studentId', select: 'id name' });
-    const result = await Semester.find({ semesterCode: { $lt: semesterCode }, isRunning: true }).select('courses')
-        .populate({ path: 'courses', select: 'courseTitle _id courseCode' })
-    // .populate({ path: 'studentsCourses.coursesMarksList', select: 'courseTitle -_id courseCode' })
+
+    // const result = await Semester.find({ semesterCode: { $lt: semesterCode }, isRunning: true })
+    //     .select('coursesMarks')
+    //     .populate({ path: 'coursesMarks', select: 'courseTitle _id courseCode' })
+
+    // console.log(semesterCode);
+    const result = await Semester.aggregate([
+        { $match: { semesterCode: { $lt: parseInt(semesterCode) }, isRunning: true } },
+        { $lookup: { from: 'marks', localField: 'coursesMarks', foreignField: '_id', as: 'coursesMarks' } },
+        {
+            $project: {
+                'coursesMarks': 1,
+                '_id': 0
+            }
+        },
+        { $unwind: "$coursesMarks" },
+        {
+            $project: {
+                'coursesMarks.courseCode': 1,
+                'coursesMarks.courseTitle': 1,
+                'coursesMarks.credit': 1,
+                'coursesMarks.teacher': 1,
+                'coursesMarks.semesterId': 1,
+            }
+        },
+    ])
     return result;
 }
 
