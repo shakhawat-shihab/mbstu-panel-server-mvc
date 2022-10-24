@@ -110,6 +110,24 @@ const marksSchema = mongoose.Schema({
             type: Number,
             max: 40
         },
+        labExperimentBy: {
+            type: String,
+        },
+        projectClassPerformance: {
+            type: Number,
+            max: 70
+        },
+        projectClassPerformanceBy: {
+            type: String,
+        },
+        projectPresentation: {
+            type: Number,
+            max: 30
+        },
+        projectPresentationBy: {
+            type: String,
+        },
+
 
 
         isPaid: {

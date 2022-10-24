@@ -6,6 +6,9 @@ const studentResultSchema = mongoose.Schema({
         type: ObjectId,
         ref: 'profile'
     },
+    department: {
+        type: String
+    },
     id: {
         type: String
     },

@@ -13,9 +13,12 @@ router.post('/', semesterController.createSemester);
 router.patch('/semester-info/:semesterId', semesterController.updateSemester);
 //courseId will be courseMarks ref to marks
 router.patch('/semester-course/:courseMarks', semesterController.updateSemesterCourse);
-router.get('/courses/:semesterCode', semesterController.getCoursesPreviousRunningSemester);
 
-router.get('/marks-of-all-course/:semesterId', semesterController.getMarksOfCurrentSemester);
+router.get('/courses-previous/:semesterCode', verifyToken, semesterController.getCoursesPreviousRunningSemester);
+
+router.get('/courses-running/:semesterCode', verifyToken, semesterController.getCoursesOfRunningSemesterBySemesterCode)
+
+router.get('/marks-of-all-course/:semesterId', verifyToken, semesterController.getMarksOfCurrentSemester);
 
 
 

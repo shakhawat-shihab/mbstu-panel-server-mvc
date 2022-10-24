@@ -13,4 +13,5 @@ router.patch('/add-teacher/:userId', verifyToken, userController.addTeacher);
 router.patch('/add-dept-chairman/:userId', verifyToken, userController.addDeptChairman);
 router.get('/teacher', userController.getTeacherByDept);
 
+
 module.exports = router;

@@ -186,17 +186,15 @@ exports.confirmEmail = async (req, res) => {
             profile.lastName = user?.lastName;
         }
 
-
         //profile create
         const profileResult = await createProfileService(profile);
-
 
         // student result create
         if (student) {
             const getHall = await findStudentInhallService(user.email.substring(0, 7));
             const obj = { name: getHall.name, hallId: getHall._id }
             user.hall = obj;
-            const studentResult = await createStudentResultService({ id: user.email.substring(0, 7), studentProfile: profileResult?._id, semesterCode: 1 });
+            const studentResult = await createStudentResultService({ id: user.email.substring(0, 7), department: user.department, studentProfile: profileResult?._id, semesterCode: 1 });
             // console.log(' studentResult ', studentResult)
         }
 

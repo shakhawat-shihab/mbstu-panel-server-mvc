@@ -23,69 +23,79 @@ exports.updateSemesterService = async (id, semester) => {
 //         .populate({ path: 'studentsCourses.coursesMarksList', select: 'courseTitle -_id courseCode' })
 //     return result;
 // }
-exports.getCoursesPreviousRunningSemesterService = async (semesterCode) => {
-    // const result = await Semester.find({ _id: semesterId }).select('studentCourses').populate({ path: 'studentCourses.studentId', select: 'id name' });
 
-    // const result = await Semester.find({ semesterCode: { $lt: semesterCode }, isRunning: true })
-    //     .select('coursesMarks')
-    //     .populate({ path: 'coursesMarks', select: 'courseTitle _id courseCode' })
 
-    // console.log(semesterCode);
+
+exports.getCoursesOfRunningSemesterBySemesterCodeService = async (semesterCode, dept) => {
+    const courses = await Semester.findOne({ semesterCode: semesterCode, department: dept, isRunning: true })
+        .select('coursesMarks name degree')
+        .populate({ path: 'coursesMarks', select: 'courseCode courseTitle credit type teacher semesterId' })
+    // console.log(semester.courses)
+    return courses;
+}
+
+exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept) => {
+    // console.log(semesterCode, dept);
     const result = await Semester.aggregate([
-        { $match: { semesterCode: { $lt: parseInt(semesterCode) }, isRunning: true } },
-        { $lookup: { from: 'marks', localField: 'coursesMarks', foreignField: '_id', as: 'coursesMarks' } },
+        { $match: { semesterCode: { $lt: parseInt(semesterCode) }, department: dept, isRunning: true } },
+        { $lookup: { from: 'marks', localField: 'coursesMarks', foreignField: '_id', as: 'course' } },
         {
             $project: {
-                'coursesMarks': 1,
+                'course': 1,
                 '_id': 0
             }
         },
-        { $unwind: "$coursesMarks" },
+        { $unwind: "$course" },
         {
             $project: {
-                'coursesMarks.courseCode': 1,
-                'coursesMarks.courseTitle': 1,
-                'coursesMarks.credit': 1,
-                'coursesMarks.teacher': 1,
-                'coursesMarks.semesterId': 1,
+                'course.courseCode': 1,
+                'course.courseTitle': 1,
+                'course.credit': 1,
+                'course.teacher': 1,
+                'course.semesterId': 1,
+                'course._id': 1,
             }
         },
+
     ])
     return result;
 }
 
+
+
+//need a lot of modification here
 exports.getMarksOfCurrentSemesterService = async (semesterId) => {
-    // const result = await Semester.find({ _id: semesterId }).select('studentCourses').populate({ path: 'studentCourses.studentId', select: 'id name' });
-    const semester = await Semester.findOne({ _id: semesterId })
+    const result = await Semester.findOne({ _id: semesterId }).select('coursesMarks examCommittee examCommitteeChairman ').populate({ path: 'coursesMarks' });
+    // const semester = await Semester.findOne({ _id: semesterId })
     // console.log(semester.courses)
-    const marks = await Marks.find({
-        "_id": {
-            $in: semester.courses
-        }
-    })
-    const mark = await Marks.aggregate([
-        {
-            $match: {
-                "_id": {
-                    $in: semester.courses
-                }
-            }
-        },
-        {
-            $unwind: "$studentsMarks"
-        },
-        {
-            $group: {
-                _id: "$studentsMarks.id",
-                marksArray: {
-                    $push: {
-                        courseCode: "$courseCode",
-                        courseTitle: "$courseTitle",
-                        marks: "$studentsMarks.theoryFinal"
-                    }
-                }
-            }
-        }
-    ])
-    return mark;
+    // const marks = await Marks.find({
+    //     "_id": {
+    //         $in: semester.courses
+    //     }
+    // })
+    // const mark = await Marks.aggregate([
+    //     {
+    //         $match: {
+    //             "_id": {
+    //                 $in: semester.coursesMarks
+    //             }
+    //         }
+    //     },
+    //     {
+    //         $unwind: "$studentsMarks"
+    //     },
+    //     {
+    //         $group: {
+    //             _id: "$studentsMarks.id",
+    //             marksArray: {
+    //                 $push: {
+    //                     courseCode: "$courseCode",
+    //                     courseTitle: "$courseTitle",
+    //                     marks: "$studentsMarks.theoryFinal"
+    //                 }
+    //             }
+    //         }
+    //     }
+    // ])
+    return result;
 }

@@ -63,7 +63,8 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
         const user = req.user;
         const { courseMarksId } = req.params;
         const { propertyName } = req.body;
-        const marksOfACourse = await getMarksCourseTeacherService(courseMarksId);
+        const type = await getTypeOfACourseService(req.params.courseMarksId);
+        const marksOfACourse = await getMarksCourseTeacherService(courseMarksId, type?.type);
         if (user.profileId != marksOfACourse.teacher[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
@@ -105,6 +106,14 @@ exports.updateMarksSecondExamineer = async (req, res, next) => {
     try {
         const user = req.user;
         const { courseMarksId } = req.params;
+        // const validProperty=['theorySecondExamineer'];
+        // if(!validProperty.includes(propertyName)){
+        //     return res.status(400).json({
+        //         status: "fail",
+        //         message: "You are not authorized to add the following property",
+        //     });
+        // }
+
         const marksOfACourse = await getMarksSecondExamineerService(courseMarksId);
         // console.log(marksOfACourse.teacher[`teacherProfileId`])
         // console.log(user.profileId)
@@ -133,6 +142,56 @@ exports.updateMarksSecondExamineer = async (req, res, next) => {
             status: "success",
             message: "Successfully added marks",
             data: result
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add marks",
+            error: error.message,
+        });
+    }
+}
+
+exports.updateMarksExamCommittee = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { courseMarksId } = req.params;
+        const { propertyName } = req.body;
+        const validProperty = ['labExperiment', 'projectPresentation'];
+        if (!validProperty.includes(propertyName)) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not authorized to add the following property",
+            });
+        }
+        const result = await getAllMarksOfStudentsOfACourseService(courseMarksId);
+        if (!(result?.semesterId?.examCommitteeChairman == user?.profileId) && !(result?.semesterId?.examCommittee.includes(user?.profileId))) {
+            // console.log('found');
+            // isExamCommittee=false;
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not in exam comittee",
+            });
+        }
+        const updatedData = result.studentsMarks.map((student) => {
+            const inputObject = req.body.marks.find(x => {
+                return x.id == student.id
+            })
+            // console.log('inputObject == ', inputObject)
+            if (inputObject?.[`${propertyName}`]) {
+                student[`${propertyName}`] = inputObject?.[`${propertyName}`];
+                student[`${propertyName}By`] = user?.fullname;
+            }
+            return student;
+        })
+        // console.log(updatedData)
+        const output = await updateMarksService(courseMarksId, updatedData)
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully added marks",
+            data: output
         });
 
     } catch (error) {
@@ -220,12 +279,22 @@ exports.addPaymentInfo = async (req, res, next) => {
 exports.getAllMarksOfStudentsOfACourse = async (req, res, next) => {
     try {
         const { courseMarksId } = req.params;
-        const result = await getAllMarksOfStudentsOfACourseService(courseMarksId)
-        return res.status(200).json({
-            status: "success",
-            message: "Successfully loaded marks of the course",
-            data: result
-        });
+        const user = req.user;
+        const result = await getAllMarksOfStudentsOfACourseService(courseMarksId);
+        if (result?.semesterId?.examCommitteeChairman == user?.profileId || result?.semesterId?.examCommittee.includes(user?.profileId)) {
+            // console.log('found');
+            return res.status(200).json({
+                status: "success",
+                message: "Successfully loaded student of a course and their marks",
+                data: result
+            });
+        }
+        else {
+            res.status(400).json({
+                status: "fail",
+                message: "You are not in exam comittee",
+            });
+        }
     } catch (error) {
         res.status(400).json({
             status: "fail",

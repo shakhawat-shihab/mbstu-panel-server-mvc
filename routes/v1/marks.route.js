@@ -9,12 +9,13 @@ router.patch('/course-registration/payment-complete', marksController.addPayment
 
 router.get('/get-marks/course-teacher/:courseMarksId', verifyToken, marksController.getMarksCourseTeacher);
 router.get('/get-marks/second-examineer/:courseMarksId', verifyToken, marksController.getMarksSecondExamineer);
-router.get('/get-marks/third-examineer/:courseMarksId', marksController.getMarksCourseTeacher);
+router.get('/get-marks/third-examineer/:courseMarksId', marksController.getMarksCourseTeacher);  // korte hobe
 
 router.patch('/update-marks/course-teacher/:courseMarksId', verifyToken, marksController.updateMarksCourseTeacher);
 router.patch('/update-marks/second-examineer/:courseMarksId', verifyToken, marksController.updateMarksSecondExamineer);
 
-router.get('/get-marks/exam-committe/:courseMarksId', marksController.getAllMarksOfStudentsOfACourse);
+router.get('/get-marks/exam-committe/:courseMarksId', verifyToken, marksController.getAllMarksOfStudentsOfACourse);
+router.patch('/update-marks/exam-committe/:courseMarksId', verifyToken, marksController.updateMarksExamCommittee); //  // korte hobe
 
 // state=1 (course Teacher)   //state=2 second examineer   //state=3 (third examineer)
 router.get('/taken-courses/:profileId/:state', marksController.getTakenCourses);

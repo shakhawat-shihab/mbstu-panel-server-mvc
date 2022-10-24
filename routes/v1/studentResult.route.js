@@ -3,7 +3,8 @@ const studentResultController = require("../../controllers/studentResult.control
 
 const router = express.Router();
 
-router.get('/:studentId', studentResultController.getStudentResult);
+router.get('/:studentProfileId', studentResultController.getStudentResult);
+router.get('/get-semester-code/:studentProfileId', studentResultController.getStudentSemesterCode);
 
 
 module.exports = router;

@@ -26,6 +26,7 @@ exports.getTypeOfACourseService = async (_id) => {
 
 exports.getMarksCourseTeacherService = async (_id, type = null) => {
     let result;
+
     if (type == 'theory') {
         result = await Marks.findOne({ _id })
             .select('studentsMarks.id teacher type courseTitle courseCode credit studentsMarks.theoryAttendance studentsMarks.theoryCT1 studentsMarks.theoryCT2 studentsMarks.theoryCT3 studentsMarks.theoryFinal studentsMarks.studentProfileId')
@@ -63,8 +64,8 @@ exports.updateMarksService = async (id, info) => {
 }
 
 exports.getAllMarksOfStudentsOfACourseService = async (courseMarksId) => {
-
-    const result = await Marks.findOne({ _id: courseMarksId });
+    const result = await Marks.findOne({ _id: courseMarksId })
+        .populate({ path: 'semesterId', select: 'examCommittee examCommitteeChairman' })
     return result;
 }
 
