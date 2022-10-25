@@ -18,7 +18,8 @@ exports.generateToken = (userInfo) => {
     // console.log('TOKEN_SECRET ', process.env.TOKEN_SECRET);
     // crypto.randomBytes(64).toString('hex')  => process.env.TOKEN_SECRET
     const token = jwt.sign(payload, process.env.TOKEN_SECRET, {
-        expiresIn: '10h'
+        // expiresIn: '10h'
+        expiresIn: '2 days'
     })
     return token;
 }

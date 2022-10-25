@@ -33,7 +33,7 @@ const marksSchema = mongoose.Schema({
             ref: "profile",
         }
     },
-    secondExamineer: {
+    secondExaminer: {
         name: {
             type: String,
             trim: true,
@@ -43,7 +43,7 @@ const marksSchema = mongoose.Schema({
             ref: "profile",
         }
     },
-    thirdExamineer: {
+    thirdExaminer: {
         name: {
             type: String,
             trim: true,
@@ -86,11 +86,11 @@ const marksSchema = mongoose.Schema({
             type: Number,
             max: 70
         },
-        theorySecondExamineer: {
+        theorySecondExaminer: {
             type: Number,
             max: 70
         },
-        theoryThirdExamineer: {
+        theoryThirdExaminer: {
             type: Number,
             max: 70
         },
@@ -127,9 +127,6 @@ const marksSchema = mongoose.Schema({
         projectPresentationBy: {
             type: String,
         },
-
-
-
         isPaid: {
             type: Boolean,
             default: false

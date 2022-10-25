@@ -1,5 +1,5 @@
 const e = require("express");
-const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, getMarksSecondExamineerService, updateMarksService, getTakenCoursesService } = require("../services/marks.service");
+const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService } = require("../services/marks.service");
 
 
 exports.getMarksCourseTeacher = async (req, res, next) => {
@@ -10,7 +10,7 @@ exports.getMarksCourseTeacher = async (req, res, next) => {
         const marksOfACourse = await getMarksCourseTeacherService(req.params.courseMarksId, type.type);
         //console.log(marksOfACourse.teacher[`teacherProfileId`])
         // console.log(user.profileId)
-        if (user.profileId != marksOfACourse.teacher[`teacherProfileId`]) {
+        if (user?.profileId != marksOfACourse?.teacher[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
@@ -32,12 +32,38 @@ exports.getMarksCourseTeacher = async (req, res, next) => {
 
 
 
-exports.getMarksSecondExamineer = async (req, res, next) => {
+exports.getMarksSecondExaminer = async (req, res, next) => {
     try {
         const user = req.user;
-        const marksOfACourse = await getMarksSecondExamineerService(req.params.courseMarksId);
+        const marksOfACourse = await getMarksSecondExaminerService(req.params.courseMarksId);
         // console.log(marksOfACourse)
-        if (user.profileId != marksOfACourse.secondExamineer[`teacherProfileId`]) {
+        if (user?.profileId != marksOfACourse?.secondExaminer[`teacherProfileId`]) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        res.status(200).json({
+            status: "success",
+            message: "Successfully loaded",
+            data: marksOfACourse
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
+
+exports.getMarksThirdExaminer = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const marksOfACourse = await getMarksThirdExaminerService(req.params.courseMarksId);
+        // console.log(marksOfACourse?.thirdExaminer?.[`teacherProfileId`])
+        // console.log(user?.profileId)
+        if (user?.profileId != marksOfACourse?.thirdExaminer?.[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
@@ -102,36 +128,74 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
 }
 
 
-exports.updateMarksSecondExamineer = async (req, res, next) => {
+exports.updateMarksSecondExaminer = async (req, res, next) => {
     try {
         const user = req.user;
         const { courseMarksId } = req.params;
-        // const validProperty=['theorySecondExamineer'];
-        // if(!validProperty.includes(propertyName)){
-        //     return res.status(400).json({
-        //         status: "fail",
-        //         message: "You are not authorized to add the following property",
-        //     });
-        // }
 
-        const marksOfACourse = await getMarksSecondExamineerService(courseMarksId);
-        // console.log(marksOfACourse.teacher[`teacherProfileId`])
-        // console.log(user.profileId)
-        if (user.profileId != marksOfACourse.secondExamineer[`teacherProfileId`]) {
+        //marks gula load korea ante hbe
+        const allmarksOfACourse = await getMarksService(courseMarksId);
+        if (user.profileId != marksOfACourse.secondExaminer[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
             });
         }
-        //marks gula load korea ante hbe
-        const allmarksOfACourse = await getMarksService(courseMarksId);
-
         const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
             const inputObject = req.body.marks.find(x => {
                 return x.id == student.id
             })
-            if (inputObject?.theorySecondExamineer) {
-                student.theorySecondExamineer = inputObject.theorySecondExamineer
+            if (inputObject?.theorySecondExaminer) {
+                student.theorySecondExaminer = inputObject.theorySecondExaminer
+            }
+            return student;
+        })
+        // console.log(updatedData)
+        const result = await updateMarksService(courseMarksId, updatedData)
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully added marks",
+            data: result
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add marks",
+            error: error.message,
+        });
+    }
+}
+
+
+exports.updateMarksThirdExaminer = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { courseMarksId } = req.params;
+        //marks gula load korea ante hbe
+        const allmarksOfACourse = await getMarksService(courseMarksId);
+        if (user?.profileId != allmarksOfACourse?.thirdExaminer?.[`teacherProfileId`]) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
+            const inputObject = req.body.marks.find(x => {
+                if (x.id == student.id) {
+                    let second = 0
+                    let first = 0
+                    student?.theoryFinal && (first = parseInt(student.theoryFinal))
+                    student?.theorySecondExaminer && (second = parseInt(student.theorySecondExaminer))
+                    // console.log(student.id, '  first === ', first, ' second === ', second)
+                    if (Math.abs(first - second) > 15) {
+                        return x
+                    }
+                }
+            })
+            if (inputObject?.theoryThirdExaminer) {
+                student.theoryThirdExaminer = inputObject.theoryThirdExaminer
             }
             return student;
         })

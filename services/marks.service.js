@@ -40,14 +40,38 @@ exports.getMarksCourseTeacherService = async (_id, type = null) => {
     return result;
 }
 
-exports.getMarksSecondExamineerService = async (_id) => {
+exports.getMarksSecondExaminerService = async (_id) => {
     // console.log(data);
     let result;
     // if (type == 'theory') {
     result = await Marks.findOne({ _id })
-        .select('studentsMarks.id secondExamineer studentsMarks.theorySecondExamineer studentsMarks.studentProfileId')
-        .populate({ path: 'studentsMarks.studentProfileId', select: 'name' })
+        .select('studentsMarks.id secondExaminer type courseTitle courseCode credit studentsMarks.theorySecondExaminer studentsMarks.studentProfileId')
+        .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
     // }
+    return result;
+}
+
+exports.getMarksThirdExaminerService = async (_id) => {
+    // console.log(data);
+    let result;
+    result = await Marks.findOne({ _id })
+        .select('studentsMarks.id thirdExaminer type courseTitle courseCode credit studentsMarks.theoryFinal studentsMarks.theorySecondExaminer studentsMarks.theoryThirdExaminer studentsMarks.studentProfileId studentsMarks.isPaid ')
+        .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
+    // console.log(result);
+    const newArrayOfStudentsMarks = result.studentsMarks;
+    result.studentsMarks = []
+    const output = newArrayOfStudentsMarks.map(x => {
+        let second = 0
+        let first = 0
+        x?.theoryFinal && (first = parseInt(x.theoryFinal))
+        x?.theorySecondExaminer && (second = parseInt(x.theorySecondExaminer))
+        if (Math.abs(first - second) > 15) {
+            // console.log('x ================== ', x);
+            let { theorySecondExaminer, theoryFinal, studentProfileId, theoryThirdExaminer, isPaid, id } = x;
+            const obj = { id, studentProfileId, isPaid, theoryThirdExaminer }
+            result.studentsMarks.push(obj);
+        }
+    })
     return result;
 }
 
@@ -77,12 +101,14 @@ exports.getTakenCoursesService = async (profileId, state) => {
             .sort('semesterId.session')
     }
     else if (state == 2) {
-        result = await Marks.find({ 'teacher.secondExamineer': profileId })
-            .populate({ path: 'semesterId', select: 'name session semesterCode' })
+        result = await Marks.find({ 'secondExaminer.teacherProfileId': profileId })
+            .populate({ path: 'semesterId', select: 'name session' })
             .sort(-'semesterId.semesterCode')
     }
     else if (state == 3) {
-        result = await Marks.find({ 'teacher.thirdExamineer': profileId })
+        result = await Marks.find({ 'thirdExaminer.teacherProfileId': profileId })
+            .populate({ path: 'semesterId', select: 'name session' })
+            .sort(-'semesterId.semesterCode')
     }
     return result;
 }

@@ -47,7 +47,7 @@ exports.createSemester = async (req, res, next) => {
         let results = courses.map(async (x) => {
             x.semesterId = semester._id;
             x.studentsMarks = previousSemesterStudents;
-            // console.log(x);
+            console.log(x);
             const result = await createMarksService(x);
             //const { courseCode, courseTitle, teacher, _id: courseMarksId } = result;
             // const obj = { courseCode, courseTitle, teacher, courseMarks }
