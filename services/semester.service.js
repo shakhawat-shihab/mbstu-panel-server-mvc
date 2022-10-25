@@ -54,6 +54,7 @@ exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept) =>
                 'course.teacher': 1,
                 'course.semesterId': 1,
                 'course._id': 1,
+                'course.type': 1,
             }
         },
 

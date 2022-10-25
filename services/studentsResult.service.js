@@ -19,8 +19,8 @@ exports.getStudentResultService = async (studentProfileId) => {
 
 exports.getStudentSemesterCodeService = async (studentProfileId) => {
     // // const result = await StudentResult.find({ semesterCode: 1 }).select('id').populate({ path: 'studentProfile', select: 'name' });
-    console.log(studentProfileId);
+    // console.log(studentProfileId);
     const result = await StudentResult.findOne({ studentProfile: studentProfileId }).select('semesterCode')
-    console.log(result);
+    // console.log(result);
     return result;
 }

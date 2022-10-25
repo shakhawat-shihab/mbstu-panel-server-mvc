@@ -39,7 +39,7 @@ exports.getStudentResult = async (req, res, next) => {
 exports.getStudentSemesterCode = async (req, res, next) => {
     try {
         const data = await getStudentSemesterCodeService(req.params.studentProfileId)
-        res.status(400).json({
+        res.status(200).json({
             status: "success",
             message: "successfully loaded",
             data: data

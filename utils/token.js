@@ -4,9 +4,13 @@ exports.generateToken = (userInfo) => {
     const payload = {
         id: userInfo?._id,
         profileId: userInfo?.profile[`_id`],
-        fullname: userInfo?.profile?.firstName + ' ' + userInfo?.profile?.lastName,
+        fullName: userInfo?.profile?.firstName + ' ' + userInfo?.profile?.lastName,
         email: userInfo?.email,
         department: userInfo?.department,
+        hall: {
+            name: userInfo?.hall?.name,
+            hallId: userInfo?.hall?.hallId
+        },
         isStudent: userInfo?.isStudent,
         isTeacher: userInfo?.isTeacher,
         isDeptChairman: userInfo?.isDeptChairman,
