@@ -31,11 +31,14 @@ exports.getMarksCourseTeacherService = async (_id, type = null) => {
         result = await Marks.findOne({ _id })
             .select('studentsMarks.id teacher type courseTitle courseCode credit studentsMarks.theoryAttendance studentsMarks.theoryCT1 studentsMarks.theoryCT2 studentsMarks.theoryCT3 studentsMarks.theoryFinal studentsMarks.studentProfileId')
             .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
+            .populate({ path: 'semesterId', select: 'semesterCode' })
+
     }
     else if (type == 'lab') {
         result = await Marks.findOne({ _id })
-            .select('studentsMarks.id teacher studentsMarks.labAttendance studentsMarks.labReport studentsMarks.labQuiz studentsMarks.labExperiment  studentsMarks.studentProfileId')
+            .select('studentsMarks.id teacher type courseTitle courseCode credit studentsMarks.labAttendance studentsMarks.labReport studentsMarks.labQuiz studentsMarks.labExperiment  studentsMarks.studentProfileId')
             .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
+            .populate({ path: 'semesterId', select: 'semesterCode' })
     }
     return result;
 }
@@ -47,6 +50,7 @@ exports.getMarksSecondExaminerService = async (_id) => {
     result = await Marks.findOne({ _id })
         .select('studentsMarks.id secondExaminer type courseTitle courseCode credit studentsMarks.theorySecondExaminer studentsMarks.studentProfileId')
         .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
+        .populate({ path: 'semesterId', select: 'semesterCode' })
     // }
     return result;
 }
@@ -57,6 +61,7 @@ exports.getMarksThirdExaminerService = async (_id) => {
     result = await Marks.findOne({ _id })
         .select('studentsMarks.id thirdExaminer type courseTitle courseCode credit studentsMarks.theoryFinal studentsMarks.theorySecondExaminer studentsMarks.theoryThirdExaminer studentsMarks.studentProfileId studentsMarks.isPaid ')
         .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
+        .populate({ path: 'semesterId', select: 'semesterCode' })
     // console.log(result);
     const newArrayOfStudentsMarks = result.studentsMarks;
     result.studentsMarks = []
