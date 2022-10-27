@@ -53,6 +53,23 @@ const marksSchema = mongoose.Schema({
             ref: "profile",
         }
     },
+
+    // for project courses 
+    teacherList: [{
+        type: ObjectId,
+        ref: "profile",
+    }],
+
+    // for project courses 
+    teacherStudentMap: [{
+        teacherProfileId: {
+            type: ObjectId,
+            ref: "profile",
+        },
+        students: [String]
+    }],
+
+
     semesterId: {
         type: ObjectId,
         ref: "semester",

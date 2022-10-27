@@ -61,13 +61,27 @@ const courseApplicationSchema = mongoose.Schema({
         type: ObjectId,
         ref: "marks"
     }],
-
-
-
+    status: {
+        type: String,
+        enum: ['pending', 'successful'],
+        default: 'pending'
+    },
+    isChairmanVerified: {
+        type: Boolean,
+        default: false
+    },
+    isHallVerified: {
+        type: Boolean,
+        default: false
+    },
+    isAcademicComitteeVerified: {
+        type: Boolean,
+        default: false
+    },
 
 }, {
     timestamps: true
 })
 
-const courseApplication = mongoose.model('course-application', courseApplicationSchema)
-module.exports = courseApplication;
+const CourseApplication = mongoose.model('course-application', courseApplicationSchema)
+module.exports = CourseApplication;
