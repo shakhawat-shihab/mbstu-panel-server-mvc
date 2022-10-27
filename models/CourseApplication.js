@@ -11,43 +11,36 @@ const courseApplicationSchema = mongoose.Schema({
     },
     semesterCode: {
         type: Number,
-        required: true
     },
     department: {
         type: String,
-        required: true
     },
     departmentName: {
         type: String,
-        required: true
     },
     degree: {
         type: String,
-        required: true
     },
     applicantId: {
         type: String,
-        required: true
     },
     applicantProfileId: {
         type: String,
-        required: true
     },
     applicantName: {
         type: String,
-        required: true
     },
     applicantSession: {
         type: String,
-        required: true
+
     },
     applicantHallName: {
         type: String,
-        required: true
+
     },
     applicantHallId: {
         type: String,
-        required: true
+
     },
     regularCourses: [{
         type: ObjectId,

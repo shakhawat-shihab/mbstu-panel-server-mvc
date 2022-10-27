@@ -1,4 +1,4 @@
-const { createProjectApplicationService, getProjectCoursesService } = require("../services/projectApplication.service");
+const { createProjectApplicationService, getProjectCoursesService, getMyProposalForACourseService } = require("../services/projectApplication.service");
 
 exports.createProjectApplication = async (req, res, next) => {
     try {
@@ -19,8 +19,7 @@ exports.createProjectApplication = async (req, res, next) => {
 
 exports.getProjectCourses = async (req, res, next) => {
     try {
-        const { profileId } = req.params
-        const { department } = req.params
+        const { profileId, department } = req.user;
         const courses = await getProjectCoursesService(profileId, department)
         res.status(200).json({
             status: "success",
@@ -35,3 +34,24 @@ exports.getProjectCourses = async (req, res, next) => {
         });
     }
 }
+
+exports.getMyProposalForACourse = async (req, res, next) => {
+    try {
+        const { profileId, department } = req.user;
+        const { courseId } = req.params;
+        const application = await getMyProposalForACourseService(profileId, courseId)
+        res.status(200).json({
+            status: "success",
+            message: "Applications loaded successfully!",
+            data: application,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load applications.",
+            error: error.message,
+        });
+    }
+}
+
+

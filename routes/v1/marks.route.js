@@ -21,7 +21,7 @@ router.patch('/update-marks/exam-committe/:courseMarksId', verifyToken, marksCon
 
 // state=1 (course Teacher)   //state=2 second examineer   //state=3 (third examineer)
 router.get('/taken-courses/:profileId/:state', marksController.getTakenCourses);
-
+router.get('/load-teacher/:courseId', verifyToken, marksController.getTeachersForACourse)
 
 // router.get('/:id', );
 

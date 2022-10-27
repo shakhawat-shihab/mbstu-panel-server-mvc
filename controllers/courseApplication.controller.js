@@ -1,4 +1,4 @@
-const { createCourseApplicationService, getTotalCreditTakenService } = require("../services/courseApplication.service");
+const { createCourseApplicationService, getTotalCreditTakenService, getApplicationForADepartmentService } = require("../services/courseApplication.service");
 
 
 
@@ -32,6 +32,24 @@ exports.getTotalCreditTaken = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to loadn",
+            error: error.message,
+        });
+    }
+}
+
+exports.getApplicationForADepartment = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const totalCredit = await getApplicationForADepartmentService(user?.department);
+        res.status(200).json({
+            status: "success",
+            message: "Application loaded successfully!",
+            data: totalCredit,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
             error: error.message,
         });
     }

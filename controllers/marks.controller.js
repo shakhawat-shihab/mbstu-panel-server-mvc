@@ -1,5 +1,6 @@
 const e = require("express");
-const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService } = require("../services/marks.service");
+const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService, getTeachersForACourseService } = require("../services/marks.service");
+
 
 
 exports.getMarksCourseTeacher = async (req, res, next) => {
@@ -387,3 +388,20 @@ exports.getTakenCourses = async (req, res, next) => {
 }
 
 
+exports.getTeachersForACourse = async (req, res, next) => {
+    try {
+        const { courseId } = req.params;
+        const teachers = await getTeachersForACourseService(courseId)
+        res.status(200).json({
+            status: "success",
+            message: "Teachers loaded successfully!",
+            data: teachers,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load teachers.",
+            error: error.message,
+        });
+    }
+}

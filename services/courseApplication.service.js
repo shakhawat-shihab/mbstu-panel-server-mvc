@@ -4,6 +4,11 @@ exports.createCourseApplicationService = async (data) => {
     const result = await CourseApplication.create(data);
     return result;
 }
+
+exports.getApplicationForADepartmentService = async (department) => {
+    const result = await CourseApplication.find({ department: department, isChairmanVerified: false });
+    return result;
+}
 exports.getTotalCreditTakenService = async (id) => {
     const result = await CourseApplication.find({ applicantProfileId: id, status: 'pending' })
         .select('name applicantId applicantName regularCourses backlogCourses specialCourses ')

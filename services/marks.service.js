@@ -132,3 +132,11 @@ exports.addStudentService = async (data) => {
     // // return result;
 }
 
+
+exports.getTeachersForACourseService = async (courseId) => {
+    const teachers = Marks.findOne({ _id: courseId })
+        .select('courseCode courseTitle credit type teacherList')
+        .populate({ path: 'teacherList', select: '_id firstName lastName ' })
+    // console.log(teachers);
+    return teachers
+}

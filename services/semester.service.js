@@ -100,3 +100,4 @@ exports.getMarksOfCurrentSemesterService = async (semesterId) => {
     // ])
     return result;
 }
+

@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/create', courseApplicationController.createCourseApplication)
 router.get('/total-credit-taken/:profileId', courseApplicationController.getTotalCreditTaken)
+router.get('/get-application-department', verifyToken, courseApplicationController.getApplicationForADepartment)
 
 
 

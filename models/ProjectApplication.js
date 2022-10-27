@@ -21,30 +21,31 @@ const projectApplicationSchema = mongoose.Schema({
         type: String,
         required: true
     },
-
+    teacherName: {
+        type: String,
+    },
+    teacherProfileId: {
+        type: ObjectId,
+        ref: 'profile'
+    },
     applicantId: {
         type: String,
-        required: true
     },
     applicantProfileId: {
-        type: String,
-        required: true
+        type: ObjectId,
+        ref: 'profile'
     },
     applicantName: {
         type: String,
-        required: true
     },
     applicantSession: {
         type: String,
-        required: true
     },
-
     status: {
         type: String,
         enum: ['pending', 'successful', 'denied'],
         default: 'pending'
     },
-
 
 }, {
     timestamps: true
