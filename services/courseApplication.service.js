@@ -9,6 +9,17 @@ exports.getApplicationForADepartmentService = async (department) => {
     const result = await CourseApplication.find({ department: department, isChairmanVerified: false });
     return result;
 }
+
+exports.getApplicationForAHallService = async (hallId) => {
+    const result = await CourseApplication.find({ applicantHallId: hallId, isHallVerified: false });
+    return result;
+}
+
+exports.getApplicationForAcademicService = async () => {
+    const result = await CourseApplication.find({ isAcademicCommitteeVerified: false });
+    return result;
+}
+
 exports.getTotalCreditTakenService = async (id) => {
     const result = await CourseApplication.find({ applicantProfileId: id, status: 'pending' })
         .select('name applicantId applicantName regularCourses backlogCourses specialCourses ')

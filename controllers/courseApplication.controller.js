@@ -1,4 +1,4 @@
-const { createCourseApplicationService, getTotalCreditTakenService, getApplicationForADepartmentService } = require("../services/courseApplication.service");
+const { createCourseApplicationService, getTotalCreditTakenService, getApplicationForADepartmentService, getApplicationForAcademicService, getApplicationForAHallService } = require("../services/courseApplication.service");
 
 
 
@@ -40,11 +40,47 @@ exports.getTotalCreditTaken = async (req, res, next) => {
 exports.getApplicationForADepartment = async (req, res, next) => {
     try {
         const user = req.user;
-        const totalCredit = await getApplicationForADepartmentService(user?.department);
+        const applications = await getApplicationForADepartmentService(user?.department);
         res.status(200).json({
             status: "success",
-            message: "Application loaded successfully!",
-            data: totalCredit,
+            message: "Applications loaded successfully!",
+            data: applications,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
+
+exports.getApplicationForAHall = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const applications = await getApplicationForAHallService(user?.hall?.hallId);
+        res.status(200).json({
+            status: "success",
+            message: "Applications loaded successfully!",
+            data: applications,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
+
+exports.getApplicationForAcademic = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const applications = await getApplicationForAcademicService();
+        res.status(200).json({
+            status: "success",
+            message: "Applications loaded successfully!",
+            data: applications,
         });
     } catch (error) {
         res.status(400).json({

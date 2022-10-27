@@ -8,6 +8,7 @@ const marksSchema = mongoose.Schema({
         // required: [true, "Please provide a first name"],
         // minLength: 3,
         maxLength: 100,
+        lowercase: true,
     },
     courseTitle: {
         type: String,

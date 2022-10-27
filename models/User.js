@@ -59,6 +59,9 @@ const userSchema = mongoose.Schema({
     isDeptChairman: {
         type: Boolean,
     },
+    isHallProvost: {
+        type: Boolean,
+    },
     status: {
         type: String,
         enum: ['active', 'inactive', 'blocked'],

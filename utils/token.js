@@ -14,6 +14,7 @@ exports.generateToken = (userInfo) => {
         isStudent: userInfo?.isStudent,
         isTeacher: userInfo?.isTeacher,
         isDeptChairman: userInfo?.isDeptChairman,
+        isHallProvost: userInfo?.isHallProvost,
     }
     // console.log('TOKEN_SECRET ', process.env.TOKEN_SECRET);
     // crypto.randomBytes(64).toString('hex')  => process.env.TOKEN_SECRET

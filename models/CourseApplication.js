@@ -67,7 +67,7 @@ const courseApplicationSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    isAcademicComitteeVerified: {
+    isAcademicCommitteeVerified: {
         type: Boolean,
         default: false
     },
