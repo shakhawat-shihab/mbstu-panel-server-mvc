@@ -3,6 +3,14 @@ const { ObjectId } = mongoose.Schema.Types
 const validator = require('validator')
 
 const projectApplicationSchema = mongoose.Schema({
+    projectApplicationTitle: {
+        type: String,
+        required: true,
+    },
+    projectApplicationDescription: {
+        type: String,
+        required: true,
+    },
     courseTitle: {
         type: String,
     },
@@ -38,12 +46,22 @@ const projectApplicationSchema = mongoose.Schema({
     applicantName: {
         type: String,
     },
+    applicantEmail: {
+        type: String,
+    },
     applicantSession: {
         type: String,
     },
+    teacher: {
+        name: String,
+        teacherProfileId: {
+            type: ObjectId,
+            ref: 'profile'
+        }
+    },
     status: {
         type: String,
-        enum: ['pending', 'successful', 'denied'],
+        enum: ['pending', 'successful', 'denied', 'discontinued'],
         default: 'pending'
     },
 

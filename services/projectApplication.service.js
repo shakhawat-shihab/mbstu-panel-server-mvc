@@ -17,7 +17,7 @@ exports.getProjectCoursesService = async (studentProfileId, department) => {
     const result = await getCoursesOfRunningSemesterBySemesterCodeService(data?.semesterCode + 1, department);
 
     const arrayOfProjectCourse = [];
-    result?.coursesMarks.map(x => {
+    result?.coursesMarks?.map(x => {
         if (x.type == 'project')
             arrayOfProjectCourse.push(x)
     })

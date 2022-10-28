@@ -67,7 +67,10 @@ const marksSchema = mongoose.Schema({
             type: ObjectId,
             ref: "profile",
         },
-        students: [String]
+        students: [{
+            type: String,
+            ref: 'profile'
+        }]
     }],
 
 
@@ -169,6 +172,14 @@ marksSchema.methods.setStudent = function (data) {
 marksSchema.methods.setPayment = function (index) {
     this.studentsMarks[index].isPaid = true;
     // this.isPaid = true;
+};
+
+
+marksSchema.methods.setTeacherStudentMap = function (data) {
+    //this.studentsMarks.isPaid = true;
+    // this.isPaid = true;
+    console.log(' setTeacherStudentMap function in Msrks model === ', data);
+    this.teacherStudentMap = data;
 };
 
 const Marks = mongoose.model("marks", marksSchema);
