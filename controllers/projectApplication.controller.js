@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const { getMarksService } = require("../services/marks.service");
-const { createProjectApplicationService, getProjectCoursesService, getMyProposalForACourseService, getProposalDetailsService, getProposalToTeacherForACourseService, updateProposalToApproveService, updateProposalToDiscontinuedService } = require("../services/projectApplication.service");
+const { createProjectApplicationService, getProjectCoursesService, getMyProposalForACourseService, getProposalDetailsService, getProposalToTeacherForACourseService, updateProposalToApproveService, updateProposalToDiscontinuedService, getAcceptedProposalService } = require("../services/projectApplication.service");
 
 exports.createProjectApplication = async (req, res, next) => {
     try {
@@ -74,6 +74,26 @@ exports.getProposalToTeacherForACourse = async (req, res, next) => {
         });
     }
 }
+
+exports.getAcceptedProposal = async (req, res, next) => {
+    try {
+        const { profileId } = req.user;
+        const { courseId } = req.params;
+        const application = await getAcceptedProposalService(profileId, courseId)
+        res.status(200).json({
+            status: "success",
+            message: "Proposals loaded successfully!",
+            data: application,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load proposals.",
+            error: error.message,
+        });
+    }
+}
+
 
 exports.updateProposalToApprove = async (req, res, next) => {
     try {

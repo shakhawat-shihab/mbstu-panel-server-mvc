@@ -50,7 +50,7 @@ exports.approveProposalService = async (proposalId) => {
 }
 
 exports.updateProposalToApproveService = async (proposalId) => {
-    const result = await ProjectApplication.updateOne({ _id: proposalId }, { $set: { status: "successful" } });
+    const result = await ProjectApplication.updateOne({ _id: proposalId }, { $set: { status: "accepted" } });
     // console.log(applications);
     return result;
 }
@@ -59,6 +59,13 @@ exports.updateProposalToDiscontinuedService = async (courseMarksId, studentProfi
     const result = await ProjectApplication.updateOne({ courseMarksId: courseMarksId, applicantProfileId: studentProfileId, status: "pending" }, { $set: { status: "discontinued" } });
     // console.log(applications);
     return result;
+}
+
+exports.getAcceptedProposalService = async (studentProfileId, courseMarksId) => {
+    // const application = await ProjectApplication.findOne({ courseMarksId: courseMarksId,  });
+    const application = await ProjectApplication.findOne({ courseMarksId: courseMarksId, applicantProfileId: studentProfileId, status: 'accepted' });
+    // console.log(application);
+    return application;
 }
 
 

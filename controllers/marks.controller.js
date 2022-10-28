@@ -9,19 +9,29 @@ exports.getMarksCourseTeacher = async (req, res, next) => {
         // console.log(req.params.courseMarksId)
         const type = await getTypeOfACourseService(req.params.courseMarksId);
         const marksOfACourse = await getMarksCourseTeacherService(req.params.courseMarksId, type.type);
-        //console.log(marksOfACourse.teacher[`teacherProfileId`])
+        // console.log(marksOfACourse.teacher[`teacherProfileId`])
         // console.log(user.profileId)
-        if (user?.profileId != marksOfACourse?.teacher[`teacherProfileId`]) {
+        // console.log(marksOfACourse?.teacherList);
+        // console.log(marksOfACourse?.teacherList.includes(user.profileId))
+        if ((user.profileId != marksOfACourse?.teacher?.[`teacherProfileId`]) && !marksOfACourse?.teacherList.includes(user.profileId)) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
             });
         }
-        res.status(200).json({
-            status: "success",
-            message: "Successfully loaded",
-            data: marksOfACourse
-        });
+
+
+        if (type.type == 'project') {
+            //do something
+        }
+        else {
+            res.status(200).json({
+                status: "success",
+                message: "Successfully loaded",
+                data: marksOfACourse
+            });
+        }
+
     } catch (error) {
         res.status(400).json({
             status: "fail",
@@ -92,7 +102,7 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
         const { propertyName } = req.body;
         const type = await getTypeOfACourseService(req.params.courseMarksId);
         const marksOfACourse = await getMarksCourseTeacherService(courseMarksId, type?.type);
-        if (user.profileId != marksOfACourse.teacher[`teacherProfileId`]) {
+        if ((user.profileId != marksOfACourse?.teacher?.[`teacherProfileId`]) || marksOfACourse?.teacherList.includes(user.profileId)) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",

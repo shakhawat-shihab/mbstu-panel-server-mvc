@@ -1,5 +1,6 @@
 const Marks = require("../models/Marks");
-
+// const mongoose = require('mongoose')
+// const { ObjectId } = mongoose.Schema.Types;
 
 exports.createMarksService = async (data) => {
     const result = await Marks.create(data);
@@ -40,6 +41,14 @@ exports.getMarksCourseTeacherService = async (_id, type = null) => {
             .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
             .populate({ path: 'semesterId', select: 'semesterCode' })
     }
+
+    else if (type == 'project') {
+        result = await Marks.findOne({ _id })
+            .select('studentsMarks.id teacherList type courseTitle courseCode credit  studentsMarks.projectClassPerformance  studentsMarks.studentProfileId')
+            .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
+            .populate({ path: 'semesterId', select: 'semesterCode' })
+    }
+
     return result;
 }
 
@@ -101,9 +110,13 @@ exports.getAllMarksOfStudentsOfACourseService = async (courseMarksId) => {
 exports.getTakenCoursesService = async (profileId, state) => {
     let result;
     if (state == 1) {
-        result = await Marks.find({ 'teacher.teacherProfileId': profileId })
+        // result = await Marks.find({ 'teacher.teacherProfileId': profileId })
+        //     .populate({ path: 'semesterId', select: 'name session' })
+        //     .sort('semesterId.session')
+        result = await Marks.find({ $or: [{ 'teacher.teacherProfileId': profileId }, { teacherList: { $eq: profileId } }] })
             .populate({ path: 'semesterId', select: 'name session' })
             .sort('semesterId.session')
+
     }
     else if (state == 2) {
         result = await Marks.find({ 'secondExaminer.teacherProfileId': profileId })
