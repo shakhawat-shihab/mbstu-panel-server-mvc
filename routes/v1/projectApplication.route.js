@@ -7,7 +7,9 @@ const router = express.Router();
 router.post('/create', verifyToken, projectApplicationController.createProjectApplication)
 router.get('/find-project-course', verifyToken, projectApplicationController.getProjectCourses)
 router.get('/my-proposal/:courseId', verifyToken, projectApplicationController.getMyProposalForACourse)
-router.patch('/approve-proposal/:courseId/:studentProfileId', verifyToken, projectApplicationController.updateProposalToApprove)
+router.get('/proposal-for-teacher/:courseId', verifyToken, projectApplicationController.getProposalToTeacherForACourse)
+router.patch('/approve-proposal/:proposalId', verifyToken, projectApplicationController.updateProposalToApprove)
+
 
 
 

@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const { getMarksService } = require("../services/marks.service");
-const { createProjectApplicationService, getProjectCoursesService, getMyProposalForACourseService } = require("../services/projectApplication.service");
+const { createProjectApplicationService, getProjectCoursesService, getMyProposalForACourseService, getProposalDetailsService, getProposalToTeacherForACourseService, updateProposalToApproveService, updateProposalToDiscontinuedService } = require("../services/projectApplication.service");
 
 exports.createProjectApplication = async (req, res, next) => {
     try {
@@ -56,12 +56,43 @@ exports.getMyProposalForACourse = async (req, res, next) => {
     }
 }
 
+exports.getProposalToTeacherForACourse = async (req, res, next) => {
+    try {
+        const { profileId } = req.user;
+        const { courseId } = req.params;
+        const application = await getProposalToTeacherForACourseService(profileId, courseId)
+        res.status(200).json({
+            status: "success",
+            message: "Proposals loaded successfully!",
+            data: application,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load proposals.",
+            error: error.message,
+        });
+    }
+}
+
 exports.updateProposalToApprove = async (req, res, next) => {
     try {
         const { profileId } = req.user;
-        const { courseId, studentProfileId } = req.params;
+        const { proposalId } = req.params;
 
+        //load the proposal, so that we can get courseId & studentProfileId from the proposal
+        const application = await getProposalDetailsService(proposalId)
+        if (!application) {
+            return res.status(400).json({
+                status: "fail",
+                message: "This application not exist",
+            });
+        }
 
+        const studentProfileId = application?.applicantProfileId;
+        const courseId = application?.courseMarksId;
+        // console.log(application);
+        // console.log(studentProfileId, courseId);
 
         //get the course from course marks table
         const marks = await getMarksService(courseId);
@@ -98,26 +129,27 @@ exports.updateProposalToApprove = async (req, res, next) => {
         //now array consists of all teacherStudentMap information
         marks.setTeacherStudentMap(array);
         await marks.save({ validateBeforeSave: false });
+        // console.log(found);
+        // console.log('array  ', array);
 
 
+        const result = await updateProposalToApproveService(proposalId)
+        // console.log('result  ', result);
 
 
-        console.log(found);
-        console.log('array  ', array);
-
-
-        // const application = await getMyProposalForACourseService(profileId, courseId)
-
+        //proposal approved, now set all other proposal for these courseId will be discontinued.
+        if (result?.modifiedCount) {
+            await updateProposalToDiscontinuedService(courseId, studentProfileId);
+        }
 
         res.status(200).json({
             status: "success",
-            message: "Applications loaded successfully!",
-
+            message: "Proposal approved successfully!",
         });
     } catch (error) {
         res.status(400).json({
             status: "fail",
-            message: "Failed to load applications.",
+            message: "Failed to approve proposal.",
             error: error.message,
         });
     }

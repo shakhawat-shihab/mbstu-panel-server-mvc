@@ -6,17 +6,27 @@ exports.createCourseApplicationService = async (data) => {
 }
 
 exports.getApplicationForADepartmentService = async (department) => {
-    const result = await CourseApplication.find({ department: department, isChairmanVerified: false });
+    const result = await CourseApplication.find({ department: department, isChairmanVerified: false })
+        .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
+        .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
+        .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' })
+
     return result;
 }
 
 exports.getApplicationForAHallService = async (hallId) => {
-    const result = await CourseApplication.find({ applicantHallId: hallId, isHallVerified: false });
+    const result = await CourseApplication.find({ applicantHallId: hallId, isHallVerified: false })
+        .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
+        .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
+        .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' });
     return result;
 }
 
 exports.getApplicationForAcademicService = async () => {
-    const result = await CourseApplication.find({ isAcademicCommitteeVerified: false });
+    const result = await CourseApplication.find({ isAcademicCommitteeVerified: false })
+        .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
+        .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
+        .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' })
     return result;
 }
 

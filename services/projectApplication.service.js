@@ -27,9 +27,38 @@ exports.getProjectCoursesService = async (studentProfileId, department) => {
 }
 
 exports.getMyProposalForACourseService = async (profileId, courseId) => {
-    const applications = ProjectApplication.find({ applicantProfileId: profileId, courseMarksId: courseId })
-    console.log(applications);
+    const applications = await ProjectApplication.find({ applicantProfileId: profileId, courseMarksId: courseId })
+    // console.log(applications);
     return applications
+}
+exports.getProposalToTeacherForACourseService = async (profileId, courseId) => {
+    const applications = await ProjectApplication.find({ 'teacher.teacherProfileId': profileId, courseMarksId: courseId, status: 'pending' })
+    // console.log(applications);
+    return applications
+}
+
+exports.getProposalDetailsService = async (proposalId) => {
+    const proposal = await ProjectApplication.findOne({ _id: proposalId })
+    // console.log(applications);
+    return proposal;
+}
+
+exports.approveProposalService = async (proposalId) => {
+    const proposal = await ProjectApplication.findOne({ _id: proposalId },)
+    // console.log(applications);
+    return proposal;
+}
+
+exports.updateProposalToApproveService = async (proposalId) => {
+    const result = await ProjectApplication.updateOne({ _id: proposalId }, { $set: { status: "successful" } });
+    // console.log(applications);
+    return result;
+}
+
+exports.updateProposalToDiscontinuedService = async (courseMarksId, studentProfileId) => {
+    const result = await ProjectApplication.updateOne({ courseMarksId: courseMarksId, applicantProfileId: studentProfileId, status: "pending" }, { $set: { status: "discontinued" } });
+    // console.log(applications);
+    return result;
 }
 
 
