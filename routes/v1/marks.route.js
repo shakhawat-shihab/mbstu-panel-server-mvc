@@ -11,9 +11,13 @@ router.get('/get-marks/course-teacher/:courseMarksId', verifyToken, marksControl
 router.get('/get-marks/second-examiner/:courseMarksId', verifyToken, marksController.getMarksSecondExaminer);
 router.get('/get-marks/third-examiner/:courseMarksId', verifyToken, marksController.getMarksThirdExaminer);
 
-router.patch('/update-marks/course-teacher/:courseMarksId', verifyToken, marksController.updateMarksCourseTeacher);
-router.patch('/update-marks/second-examiner/:courseMarksId', verifyToken, marksController.updateMarksSecondExaminer);
-router.patch('/update-marks/third-examiner/:courseMarksId', verifyToken, marksController.updateMarksThirdExaminer);
+router.put('/update-marks/course-teacher/:courseMarksId', verifyToken, marksController.updateMarksCourseTeacher);
+router.put('/update-marks/second-examiner/:courseMarksId', verifyToken, marksController.updateMarksSecondExaminer);
+router.put('/update-marks/third-examiner/:courseMarksId', verifyToken, marksController.updateMarksThirdExaminer);
+
+router.put('/turn-in/course-teacher/:courseMarksId', verifyToken, marksController.turnInMarksCourseTeacher);
+router.put('/turn-in/second-examiner/:courseMarksId', verifyToken, marksController.turnInMarksSecondExaminer);
+router.put('/turn-in/third-examiner/:courseMarksId', verifyToken, marksController.turnInMarksThirdExaminer);
 
 
 router.get('/get-marks/exam-committe/:courseMarksId', verifyToken, marksController.getAllMarksOfStudentsOfACourse);

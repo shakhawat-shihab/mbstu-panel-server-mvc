@@ -30,21 +30,21 @@ exports.getMarksCourseTeacherService = async (_id, type = null) => {
 
     if (type == 'theory') {
         result = await Marks.findOne({ _id })
-            .select('studentsMarks.id teacher type courseTitle courseCode credit studentsMarks.theoryAttendance studentsMarks.theoryCT1 studentsMarks.theoryCT2 studentsMarks.theoryCT3 studentsMarks.theoryFinal studentsMarks.studentProfileId')
+            .select('studentsMarks.id teacher type courseTitle courseCode credit isSubmittedByCourseTeacher studentsMarks.theoryAttendance studentsMarks.theoryCT1 studentsMarks.theoryCT2 studentsMarks.theoryCT3 studentsMarks.theoryFinal studentsMarks.studentProfileId')
             .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
             .populate({ path: 'semesterId', select: 'semesterCode' })
 
     }
     else if (type == 'lab') {
         result = await Marks.findOne({ _id })
-            .select('studentsMarks.id teacher type courseTitle courseCode credit studentsMarks.labAttendance studentsMarks.labReport studentsMarks.labQuiz studentsMarks.labExperiment  studentsMarks.studentProfileId')
+            .select('studentsMarks.id teacher type courseTitle courseCode credit isSubmittedByCourseTeacher   studentsMarks.labAttendance studentsMarks.labReport studentsMarks.labQuiz studentsMarks.labExperiment  studentsMarks.studentProfileId')
             .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
             .populate({ path: 'semesterId', select: 'semesterCode' })
     }
 
     else if (type == 'project') {
         result = await Marks.findOne({ _id })
-            .select('studentsMarks.id teacherList type courseTitle courseCode credit  studentsMarks.projectClassPerformance  studentsMarks.studentProfileId')
+            .select('studentsMarks.id teacherList teacherStudentMap type courseTitle courseCode credit isSubmittedByCourseTeacher isSubmittedBySecondExaminer  isSubmittedByThirdExamier studentsMarks.projectClassPerformance  studentsMarks.studentProfileId')
             .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
             .populate({ path: 'semesterId', select: 'semesterCode' })
     }
@@ -57,7 +57,7 @@ exports.getMarksSecondExaminerService = async (_id) => {
     let result;
     // if (type == 'theory') {
     result = await Marks.findOne({ _id })
-        .select('studentsMarks.id secondExaminer type courseTitle courseCode credit studentsMarks.theorySecondExaminer studentsMarks.studentProfileId')
+        .select('studentsMarks.id secondExaminer type courseTitle courseCode credit isSubmittedByCourseTeacher  isSubmittedBySecondExaminer studentsMarks.theorySecondExaminer studentsMarks.studentProfileId')
         .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
         .populate({ path: 'semesterId', select: 'semesterCode' })
     // }
@@ -68,7 +68,7 @@ exports.getMarksThirdExaminerService = async (_id) => {
     // console.log(data);
     let result;
     result = await Marks.findOne({ _id })
-        .select('studentsMarks.id thirdExaminer type courseTitle courseCode credit studentsMarks.theoryFinal studentsMarks.theorySecondExaminer studentsMarks.theoryThirdExaminer studentsMarks.studentProfileId studentsMarks.isPaid ')
+        .select('studentsMarks.id thirdExaminer type courseTitle courseCode credit isSubmittedByCourseTeacher isSubmittedBySecondExaminer  isSubmittedByThirdExamier studentsMarks.theoryFinal studentsMarks.theorySecondExaminer studentsMarks.theoryThirdExaminer studentsMarks.studentProfileId studentsMarks.isPaid ')
         .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
         .populate({ path: 'semesterId', select: 'semesterCode' })
     // console.log(result);
@@ -92,6 +92,24 @@ exports.getMarksThirdExaminerService = async (_id) => {
 exports.updateMarksFromSemesterUpdate = async (id, info) => {
     // console.log(id, info)
     const result = await Marks.updateOne({ _id: id }, info);
+    return result;
+}
+
+exports.turnInMarksCourseTeacherService = async (courseId) => {
+    // console.log(id, info)
+    const result = await Marks.updateOne({ _id: courseId }, { $set: { isSubmittedByCourseTeacher: true } });
+    return result;
+}
+
+exports.turnInMarksSecondExaminerService = async (courseId) => {
+    // console.log(id, info)
+    const result = await Marks.updateOne({ _id: courseId }, { $set: { isSubmittedBySecondExaminer: true } });
+    return result;
+}
+
+exports.turnInMarksThirdExaminerService = async (courseId) => {
+    // console.log(id, info)
+    const result = await Marks.updateOne({ _id: courseId }, { $set: { isSubmittedByThirdExamier: true } });
     return result;
 }
 

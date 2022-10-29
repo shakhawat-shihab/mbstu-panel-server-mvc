@@ -108,6 +108,12 @@ exports.updateProposalToApprove = async (req, res, next) => {
                 message: "This application not exist",
             });
         }
+        if (profileId != application?.teacher?.teacherProfileId) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not authorized for these",
+            });
+        }
 
         const studentProfileId = application?.applicantProfileId;
         const courseId = application?.courseMarksId;

@@ -1,5 +1,5 @@
 const e = require("express");
-const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService, getTeachersForACourseService } = require("../services/marks.service");
+const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService, getTeachersForACourseService, turnInMarksCourseTeacherService, turnInMarksSecondExaminerService } = require("../services/marks.service");
 
 
 
@@ -22,8 +22,32 @@ exports.getMarksCourseTeacher = async (req, res, next) => {
 
 
         if (type.type == 'project') {
-            //do something
+            let student = []
+            //get the student under current teacher from teacherStudentMap
+            marksOfACourse.teacherStudentMap.map(x => {
+                if (x.teacherProfileId == user.profileId) {
+                    student = x.students;
+                }
+            })
+            // console.log('student == ', student);
+            const arr = []
+            marksOfACourse.studentsMarks.map(x => {
+                // console.log(x);
+                if (student.includes(x?.studentProfileId?._id)) {
+                    arr.push(x);
+                }
+            })
+
+            // console.log('arr == ', arr);
+            marksOfACourse.studentsMarks = arr
+
+            res.status(200).json({
+                status: "success",
+                message: "Successfully loaded",
+                data: marksOfACourse
+            });
         }
+
         else {
             res.status(200).json({
                 status: "success",
@@ -102,7 +126,13 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
         const { propertyName } = req.body;
         const type = await getTypeOfACourseService(req.params.courseMarksId);
         const marksOfACourse = await getMarksCourseTeacherService(courseMarksId, type?.type);
-        if ((user.profileId != marksOfACourse?.teacher?.[`teacherProfileId`]) || marksOfACourse?.teacherList.includes(user.profileId)) {
+        if (marksOfACourse?.isSubmittedByCourseTeacher) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
+        if ((user.profileId != marksOfACourse?.teacher?.[`teacherProfileId`]) && !marksOfACourse?.teacherList?.includes(user.profileId)) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
@@ -111,13 +141,16 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
         //marks gula load korea ante hbe
         const allmarksOfACourse = await getMarksService(courseMarksId);
         const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
-            const inputObject = req.body.marks.find(x => {
+            const inputObject = req?.body?.marks?.find(x => {
                 return x.id == student.id
             })
             // console.log('inputObject == ', inputObject)
             if (inputObject?.[`${propertyName}`]) {
                 student[`${propertyName}`] = inputObject?.[`${propertyName}`]
             }
+            // else {
+            //     student[`${propertyName}`] = 0
+            // }
             return student;
         })
         // console.log(updatedData)
@@ -146,12 +179,28 @@ exports.updateMarksSecondExaminer = async (req, res, next) => {
 
         //marks gula load korea ante hbe
         const allmarksOfACourse = await getMarksService(courseMarksId);
-        if (user.profileId != marksOfACourse.secondExaminer[`teacherProfileId`]) {
+
+        if (user.profileId != allmarksOfACourse.secondExaminer[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
             });
         }
+
+        if (!allmarksOfACourse?.isSubmittedByCourseTeacher) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Other teachers are not yet submitted the marks",
+            });
+        }
+
+        if (allmarksOfACourse?.isSubmittedBySecondExaminer) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
+
         const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
             const inputObject = req.body.marks.find(x => {
                 return x.id == student.id
@@ -186,6 +235,18 @@ exports.updateMarksThirdExaminer = async (req, res, next) => {
         const { courseMarksId } = req.params;
         //marks gula load korea ante hbe
         const allmarksOfACourse = await getMarksService(courseMarksId);
+        if (!allmarksOfACourse?.isSubmittedByCourseTeacher || !allmarksOfACourse?.isSubmittedBySecondExaminer) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Other teachers are not yet submitted the marks",
+            });
+        }
+        if (allmarksOfACourse?.isSubmittedByThirdExaminer) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
         if (user?.profileId != allmarksOfACourse?.thirdExaminer?.[`teacherProfileId`]) {
             return res.status(403).json({
                 status: "fail",
@@ -193,7 +254,7 @@ exports.updateMarksThirdExaminer = async (req, res, next) => {
             });
         }
         const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
-            const inputObject = req.body.marks.find(x => {
+            const inputObject = req.body?.marks?.find(x => {
                 if (x.id == student.id) {
                     let second = 0
                     let first = 0
@@ -227,6 +288,111 @@ exports.updateMarksThirdExaminer = async (req, res, next) => {
         });
     }
 }
+
+
+exports.turnInMarksCourseTeacher = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { courseMarksId } = req.params;
+        const type = await getTypeOfACourseService(req.params.courseMarksId);
+        const marksOfACourse = await getMarksCourseTeacherService(courseMarksId, type?.type);
+
+        if ((user.profileId != marksOfACourse?.teacher?.[`teacherProfileId`]) && !marksOfACourse?.teacherList?.includes(user.profileId)) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        if (marksOfACourse?.isSubmittedByCourseTeacher) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
+        const result = turnInMarksCourseTeacherService(courseMarksId)
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully turn in",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to turn in.",
+            error: error.message,
+        });
+    }
+}
+
+exports.turnInMarksSecondExaminer = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { courseMarksId } = req.params;
+        const marksOfACourse = await getMarksSecondExaminerService(courseMarksId);
+
+        if ((user.profileId != marksOfACourse?.secondExaminer?.[`teacherProfileId`])) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        if (marksOfACourse?.isSubmittedBySecondExaminer) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
+        const result = turnInMarksSecondExaminerService(courseMarksId)
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully turn in",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to turn in.",
+            error: error.message,
+        });
+    }
+}
+
+exports.turnInMarksThirdExaminer = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { courseMarksId } = req.params;
+        const marksOfACourse = await getMarksThirdExaminerService(courseMarksId);
+
+        if ((user.profileId != marksOfACourse?.thirdExaminer?.[`teacherProfileId`])) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        if (marksOfACourse?.isSubmittedByThirdExaminer) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
+        const result = turnInMarksThirdExaminerService(courseMarksId)
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully turn in",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to turn in.",
+            error: error.message,
+        });
+    }
+}
+
 
 exports.updateMarksExamCommittee = async (req, res, next) => {
     try {

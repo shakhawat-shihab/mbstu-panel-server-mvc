@@ -153,6 +153,15 @@ const marksSchema = mongoose.Schema({
             default: false
         }
     }],
+    isSubmittedByCourseTeacher: {
+        type: Boolean,
+    },
+    isSubmittedBySecondExaminer: {
+        type: Boolean,
+    },
+    isSubmittedByThirdExamier: {
+        type: Boolean,
+    }
 
 }, {
     timestamps: true
