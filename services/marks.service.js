@@ -122,6 +122,7 @@ exports.updateMarksService = async (id, info) => {
 exports.getAllMarksOfStudentsOfACourseService = async (courseMarksId) => {
     const result = await Marks.findOne({ _id: courseMarksId })
         .populate({ path: 'semesterId', select: 'examCommittee examCommitteeChairman' })
+        .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
     return result;
 }
 
