@@ -34,6 +34,28 @@ exports.getCoursesOfRunningSemesterBySemesterCodeService = async (semesterCode, 
     return courses;
 }
 
+exports.getCoursesBySemesterIdService = async (semesterId) => {
+    const courses = await Semester.findOne({ _id: semesterId })
+        .select('coursesMarks name degree')
+        .populate({ path: 'coursesMarks', select: ' _id courseCode courseTitle credit type teacher semesterId' })
+    // console.log(courses.coursesMarks)
+    return courses;
+}
+
+exports.getRunningSemesterByExamCommitteeService = async (profileId) => {
+    // console.log(semesterCode, dept);
+    const result = await Semester.find({ examCommittee: { $eq: profileId } })
+        .select('  name semesterCode department session degree examCommittee examCommitteeChairman ')
+    return result;
+}
+
+exports.getRunningSemesterByExamCommitteeChairmanService = async (profileId) => {
+    // console.log(semesterCode, dept);
+    const result = await Semester.find({ examCommitteeChairman: { $eq: profileId } })
+        .select('  name semesterCode department session degree examCommittee examCommitteeChairman ')
+    return result;
+}
+
 exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept) => {
     // console.log(semesterCode, dept);
     const result = await Semester.aggregate([

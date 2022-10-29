@@ -138,7 +138,38 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
                 message: "Access denied",
             });
         }
-        //marks gula load korea ante hbe
+
+        const validProperty = ['theoryAttendance', 'theoryCT1', 'theoryCT2', 'theoryCT3', 'theoryFinal', 'labAttendance', 'labReport', 'labQuiz', 'projectClassPerformance'];
+        if (!validProperty.includes(propertyName)) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not authorized to add the following property",
+            });
+        }
+
+        if (type?.type == 'theory' && (propertyName != 'theoryAttendance' && propertyName != 'theoryCT1' && propertyName != 'theoryCT2' && propertyName != 'theoryCT3' && propertyName != 'theoryFinal')) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are trying to add invalid property to theory course",
+            });
+        }
+        if (type?.type == 'lab' && (propertyName != 'labAttendance' && propertyName != 'labReport' && propertyName != 'labQuiz')) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are trying to add invalid property to theory course",
+            });
+        }
+
+        if (type?.type == 'project' && (propertyName != 'projectClassPerformance')) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are trying to add invalid property to project course",
+            });
+        }
+
+        // if(type.type=='theory' && (propertyName=='theorySecondExaminer'|| propertyName=='theoryThirdExaminer' ))
+
+        //marks gula load kore ante hbe
         const allmarksOfACourse = await getMarksService(courseMarksId);
         const updatedData = allmarksOfACourse.studentsMarks.map((student) => {
             const inputObject = req?.body?.marks?.find(x => {
@@ -412,9 +443,30 @@ exports.updateMarksExamCommittee = async (req, res, next) => {
             // isExamCommittee=false;
             return res.status(400).json({
                 status: "fail",
-                message: "You are not in exam comittee",
+                message: "You are not in exam comittee.",
             });
         }
+
+        //for theory course exam comittee will not insert any marks
+        if (result.type === 'theory') {
+            return res.status(400).json({
+                status: "fail",
+                message: "This is a theory course.",
+            });
+        }
+        if (result.type == 'lab' && propertyName == 'projectPresentation') {
+            return res.status(400).json({
+                status: "fail",
+                message: "Lab course can't have project presentation marks",
+            });
+        }
+        if (result.type == 'project' && propertyName == 'labExperiment') {
+            return res.status(400).json({
+                status: "fail",
+                message: "Project course can't have lab experiment marks",
+            });
+        }
+
         const updatedData = result.studentsMarks.map((student) => {
             const inputObject = req.body.marks.find(x => {
                 return x.id == student.id
@@ -422,7 +474,7 @@ exports.updateMarksExamCommittee = async (req, res, next) => {
             // console.log('inputObject == ', inputObject)
             if (inputObject?.[`${propertyName}`]) {
                 student[`${propertyName}`] = inputObject?.[`${propertyName}`];
-                student[`${propertyName}By`] = user?.fullname;
+                student[`${propertyName}By`] = user?.fullName;
             }
             return student;
         })

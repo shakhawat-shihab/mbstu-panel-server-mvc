@@ -21,7 +21,7 @@ router.put('/turn-in/third-examiner/:courseMarksId', verifyToken, marksControlle
 
 
 router.get('/get-marks/exam-committe/:courseMarksId', verifyToken, marksController.getAllMarksOfStudentsOfACourse);
-router.patch('/update-marks/exam-committe/:courseMarksId', verifyToken, marksController.updateMarksExamCommittee); //  // korte hobe
+router.patch('/update-marks/exam-committe/:courseMarksId', verifyToken, marksController.updateMarksExamCommittee);
 
 // state=1 (course Teacher)   //state=2 second examineer   //state=3 (third examineer)
 router.get('/taken-courses/:profileId/:state', marksController.getTakenCourses);

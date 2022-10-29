@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const { updateMarksFromSemesterUpdate, createMarksService } = require("../services/marks.service");
-const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService, getMarksOfCurrentSemesterService, getCoursesOfRunningSemesterBySemesterCodeService } = require("../services/semester.service");
+const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService, getMarksOfCurrentSemesterService, getCoursesOfRunningSemesterBySemesterCodeService, getRunningSemesterByExamCommitteeService, getRunningSemesterByExamCommitteeChairmanService, getCoursesBySemesterIdService } = require("../services/semester.service");
 const { getStudentOfPreviousSemesterService } = require("../services/studentsResult.service");
 
 
@@ -188,6 +188,42 @@ exports.getMarksOfCurrentSemester = async (req, res, next) => {
 }
 
 
+exports.getRunningSemesterByExamCommittee = async (req, res, next) => {
+    try {
+        const { user } = req;
+        const result = await getRunningSemesterByExamCommitteeService(user?.profileId);
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully loaded semesters",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load semesters",
+            error: error.message,
+        });
+    }
+}
+
+exports.getRunningSemesterByExamCommitteeChairman = async (req, res, next) => {
+    try {
+        const { user } = req;
+        const result = await getRunningSemesterByExamCommitteeChairmanService(user?.profileId);
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully loaded semesters",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load semesters",
+            error: error.message,
+        });
+    }
+}
+
 exports.getCoursesPreviousRunningSemester = async (req, res, next) => {
     try {
         const { semesterCode } = req.params;
@@ -212,6 +248,25 @@ exports.getCoursesOfRunningSemesterBySemesterCode = async (req, res, next) => {
         const { semesterCode } = req.params;
         const { user } = req;
         const courses = await getCoursesOfRunningSemesterBySemesterCodeService(semesterCode, user?.department);
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully loaded courses of a semester",
+            data: courses
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load courses of a semester",
+            error: error.message,
+        });
+    }
+}
+
+exports.getCoursesBySemesterId = async (req, res, next) => {
+    try {
+        const { semesterId } = req.params;
+        const { user } = req;
+        const courses = await getCoursesBySemesterIdService(semesterId);
         return res.status(200).json({
             status: "success",
             message: "Successfully loaded courses of a semester",
