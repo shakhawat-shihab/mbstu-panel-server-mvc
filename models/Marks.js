@@ -161,8 +161,11 @@ const marksSchema = mongoose.Schema({
     },
     isSubmittedByThirdExamier: {
         type: Boolean,
-    }
-
+    },
+    isSubmittedByProjectTeacher: [{
+        type: ObjectId,
+        ref: "profile",
+    }]
 }, {
     timestamps: true
 })

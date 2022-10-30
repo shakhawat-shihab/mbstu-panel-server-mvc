@@ -1,5 +1,5 @@
 const e = require("express");
-const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService, getTeachersForACourseService, turnInMarksCourseTeacherService, turnInMarksSecondExaminerService } = require("../services/marks.service");
+const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService, getTeachersForACourseService, turnInMarksCourseTeacherService, turnInMarksSecondExaminerService, turnInMarksThirdExaminerService, turnInMarksProjectTeacherService } = require("../services/marks.service");
 
 
 
@@ -423,6 +423,42 @@ exports.turnInMarksThirdExaminer = async (req, res, next) => {
         });
     }
 }
+
+exports.turnInMarksProjectTeacher = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { courseMarksId } = req.params;
+        const marksOfACourse = await getMarksCourseTeacherService(courseMarksId, 'project');
+        // console.log(marksOfACourse?.teacherList)
+        // console.log(user?.profileId)
+        if (!marksOfACourse?.teacherList?.includes(user?.profileId)) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Access denied",
+            });
+        }
+        if (marksOfACourse?.isSubmittedByProjectTeacher?.includes(user?.profileId)) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
+        const result = turnInMarksProjectTeacherService(courseMarksId, user?.profileId)
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully turn in",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to turn in.",
+            error: error.message,
+        });
+    }
+}
+
 
 
 exports.updateMarksExamCommittee = async (req, res, next) => {

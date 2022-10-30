@@ -18,6 +18,7 @@ router.put('/update-marks/third-examiner/:courseMarksId', verifyToken, marksCont
 router.put('/turn-in/course-teacher/:courseMarksId', verifyToken, marksController.turnInMarksCourseTeacher);
 router.put('/turn-in/second-examiner/:courseMarksId', verifyToken, marksController.turnInMarksSecondExaminer);
 router.put('/turn-in/third-examiner/:courseMarksId', verifyToken, marksController.turnInMarksThirdExaminer);
+router.put('/turn-in/project-teacher/:courseMarksId', verifyToken, marksController.turnInMarksProjectTeacher);
 
 
 router.get('/get-marks/exam-committe/:courseMarksId', verifyToken, marksController.getAllMarksOfStudentsOfACourse);

@@ -36,21 +36,22 @@ exports.getCoursesOfRunningSemesterBySemesterCodeService = async (semesterCode, 
 
 exports.getCoursesBySemesterIdService = async (semesterId) => {
     const courses = await Semester.findOne({ _id: semesterId })
-        .select('coursesMarks name degree')
+        .select('coursesMarks name degree department session')
         .populate({ path: 'coursesMarks', select: ' _id courseCode courseTitle credit type teacher semesterId' })
     // console.log(courses.coursesMarks)
     return courses;
 }
 
 exports.getRunningSemesterByExamCommitteeService = async (profileId) => {
-    // console.log(semesterCode, dept);
-    const result = await Semester.find({ examCommittee: { $eq: profileId } })
+    // console.log('profileId ', profileId);
+    // const result = await Semester.find({ examCommittee: { $eq: profileId } })
+    const result = await Semester.find({ $or: [{ examCommittee: { $eq: profileId } }, { examCommitteeChairman: { $eq: profileId } }] })
         .select('  name semesterCode department session degree examCommittee examCommitteeChairman ')
     return result;
 }
 
 exports.getRunningSemesterByExamCommitteeChairmanService = async (profileId) => {
-    // console.log(semesterCode, dept);
+    // console.log('profileId ', profileId);
     const result = await Semester.find({ examCommitteeChairman: { $eq: profileId } })
         .select('  name semesterCode department session degree examCommittee examCommitteeChairman ')
     return result;
