@@ -89,38 +89,68 @@ exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept) =>
 
 //need a lot of modification here
 exports.getMarksOfCurrentSemesterService = async (semesterId) => {
-    const result = await Semester.findOne({ _id: semesterId }).select('coursesMarks examCommittee examCommitteeChairman ').populate({ path: 'coursesMarks' });
-    // const semester = await Semester.findOne({ _id: semesterId })
+
+    // const result = await Semester.findOne({ _id: semesterId })
+    //     .select('coursesMarks examCommittee examCommitteeChairman name degree department session ')
+    //     .populate({ path: 'coursesMarks' })
+    //     .populate('examCommitteeChairman')
+
+
+    const semester = await Semester.findOne({ _id: semesterId })
     // console.log(semester.courses)
-    // const marks = await Marks.find({
+    // const marks = await Marks.findOne({
     //     "_id": {
     //         $in: semester.courses
     //     }
     // })
-    // const mark = await Marks.aggregate([
-    //     {
-    //         $match: {
-    //             "_id": {
-    //                 $in: semester.coursesMarks
-    //             }
-    //         }
-    //     },
-    //     {
-    //         $unwind: "$studentsMarks"
-    //     },
-    //     {
-    //         $group: {
-    //             _id: "$studentsMarks.id",
-    //             marksArray: {
-    //                 $push: {
-    //                     courseCode: "$courseCode",
-    //                     courseTitle: "$courseTitle",
-    //                     marks: "$studentsMarks.theoryFinal"
-    //                 }
-    //             }
-    //         }
-    //     }
-    // ])
-    return result;
+    const marks = await Marks.aggregate([
+        {
+            $match: {
+                "_id": {
+                    $in: semester.coursesMarks
+                }
+            }
+        },
+        {
+            $unwind: "$studentsMarks"
+        },
+        {
+            $group: {
+                // _id: "$studentsMarks.id",
+                _id: {
+                    id: "$studentsMarks.id",
+                    profile: "$studentsMarks.studentProfileId"
+                },
+                marksArray: {
+                    $push: {
+                        courseCode: "$courseCode",
+                        courseTitle: "$courseTitle",
+                        type: "$type",
+                        credit: "$credit",
+                        theoryAttendance: "$studentsMarks.theoryAttendance",
+                        theoryCT1: "$studentsMarks.theoryCT1",
+                        theoryCT2: "$studentsMarks.theoryCT2",
+                        theoryCT3: "$studentsMarks.theoryCT3",
+                        theoryFinal: "$studentsMarks.theoryFinal",
+                        theorySecondExaminer: "$studentsMarks.theorySecondExaminer",
+                        theoryThirdExaminer: "$studentsMarks.theoryThirdExaminer",
+                        labAttendance: "$studentsMarks.labAttendance",
+                        labReport: "$studentsMarks.labReport",
+                        labQuiz: "$studentsMarks.labQuiz",
+                        labExperiment: "$studentsMarks.labExperiment",
+                        labExperimentBy: "$studentsMarks.labExperimentBy",
+                        projectClassPerformance: "$studentsMarks.projectClassPerformance",
+                        projectClassPerformanceBy: "$studentsMarks.projectClassPerformanceBy",
+                        projectPresentation: "$studentsMarks.projectPresentation",
+                        projectPresentationBy: "$studentsMarks.projectPresentationBy",
+                        isPaid: "$studentsMarks.isPaid",
+                    }
+                }
+            }
+        },
+        { $lookup: { from: 'profiles', localField: '_id.profile', foreignField: '_id', as: 'studentInfo' } }
+    ])
+
+    return { marks, semester };
 }
 

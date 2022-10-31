@@ -163,20 +163,20 @@ exports.getMarksOfCurrentSemester = async (req, res, next) => {
         const { semesterId } = req.params;
         const { user } = req;
         const result = await getMarksOfCurrentSemesterService(semesterId);
-        if (result?.examCommitteeChairman == user?.profileId || result?.examCommittee.includes(user?.profileId)) {
-            // console.log('found');
-            return res.status(200).json({
-                status: "success",
-                message: "Successfully loaded student and their marks",
-                data: result
-            });
-        }
-        else {
-            res.status(400).json({
-                status: "fail",
-                message: "You are not in exam comittee",
-            });
-        }
+
+        // if (result?.examCommitteeChairman != user?.profileId && !result?.examCommittee?.includes(user?.profileId)) {
+        //     // console.log('found');
+        //     return res.status(400).json({
+        //         status: "fail",
+        //         message: "You are not in exam comittee",
+        //     });
+        // }
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully loaded student and their marks",
+            data: result
+        });
 
     } catch (error) {
         res.status(400).json({
