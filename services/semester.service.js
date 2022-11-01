@@ -1,5 +1,6 @@
 const Marks = require("../models/Marks");
 const Semester = require("../models/Semester");
+const { getStudentResultService } = require("./studentsResult.service");
 
 exports.createSemesterService = async (data) => {
     const result = await Semester.create(data);
@@ -57,7 +58,7 @@ exports.getRunningSemesterByExamCommitteeChairmanService = async (profileId) => 
     return result;
 }
 
-exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept) => {
+exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept, profileId) => {
     // console.log(semesterCode, dept);
     const result = await Semester.aggregate([
         { $match: { semesterCode: { $lt: parseInt(semesterCode) }, department: dept, isRunning: true } },
@@ -80,9 +81,35 @@ exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept) =>
                 'course.type': 1,
             }
         },
-
     ])
-    return result;
+    const studentResult = await getStudentResultService(profileId);
+    const arr = []
+    //console.log('studentResult  === > ', studentResult)
+    // console.log('result   === > ', result)
+    result?.map(x => {
+        let found = false;
+        // console.log(x)
+        studentResult?.coursesMarks?.map(c => {
+            // console.log(c.courseCode)
+            if (c.courseCode == x.course.courseCode) {
+                found = true;
+                if (c.type == 'theory' && (c.theorySeventy + c.theoryThirty) < 40) {
+                    arr.push(x.course)
+                }
+                else if (c.type == 'lab' && (c.labSixty + c.labFourty) < 40) {
+                    console.log(c.labSixty + c.labFourty)
+                    arr.push(x.course)
+                }
+                else if (c.type == 'project' && (c.projectSeventy + c.projectThirty) < 40) {
+                    arr.push(x.course)
+                }
+                return;
+            }
+        })
+        !found && arr.push(x.course)
+    })
+
+    return arr;
 }
 
 

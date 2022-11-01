@@ -8,7 +8,7 @@ router.post('/create', verifyToken, projectApplicationController.createProjectAp
 router.get('/find-project-course', verifyToken, projectApplicationController.getProjectCourses)
 router.get('/my-proposal/:courseId', verifyToken, projectApplicationController.getMyProposalForACourse)
 router.get('/proposal-for-teacher/:courseId', verifyToken, projectApplicationController.getProposalToTeacherForACourse)
-router.patch('/approve-proposal/:proposalId', verifyToken, projectApplicationController.updateProposalToApprove)
+router.put('/approve-proposal/:proposalId', verifyToken, projectApplicationController.updateProposalToApprove)
 router.get('/check-any-accepted/:courseId', verifyToken, projectApplicationController.getAcceptedProposal)
 
 

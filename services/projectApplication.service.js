@@ -1,7 +1,7 @@
 const Marks = require("../models/Marks");
 const ProjectApplication = require("../models/ProjectApplication");
 const { getCoursesOfRunningSemesterBySemesterCodeService } = require("./semester.service");
-const { getStudentSemesterCodeService } = require("./studentsResult.service");
+const { getStudentSemesterCodeService, getStudentResultService } = require("./studentsResult.service");
 
 exports.createProjectApplicationService = async (data) => {
     const result = await ProjectApplication.create(data);
@@ -10,20 +10,29 @@ exports.createProjectApplicationService = async (data) => {
 
 exports.getProjectCoursesService = async (studentProfileId, department) => {
     // console.log(studentProfileId, department);
-
     //get semester code
-    const data = await getStudentSemesterCodeService(studentProfileId);
+    const data = await getStudentResultService(studentProfileId);
+    console.log(data);
     // get courses of running semester
     const result = await getCoursesOfRunningSemesterBySemesterCodeService(data?.semesterCode + 1, department);
-
     const arrayOfProjectCourse = [];
     result?.coursesMarks?.map(x => {
-        if (x.type == 'project')
-            arrayOfProjectCourse.push(x)
+        let found = false;
+        if (x.type == 'project') {
+            data?.coursesMarks.map(c => {
+                if (c.courseCode == x.courseCode && (c.projectSeventy + c.projectSeventy) < 40) {
+                    found = true;
+                    arrayOfProjectCourse.push(x)
+                }
+            })
+            if (found == false) {
+                arrayOfProjectCourse.push(x)
+            }
+        }
     })
     // console.log(result);
     // console.log(arrayOfProjectCourse);
-    return arrayOfProjectCourse
+    return arrayOfProjectCourse;
 }
 
 exports.getMyProposalForACourseService = async (profileId, courseId) => {
@@ -56,7 +65,7 @@ exports.updateProposalToApproveService = async (proposalId) => {
 }
 
 exports.updateProposalToDiscontinuedService = async (courseMarksId, studentProfileId) => {
-    const result = await ProjectApplication.updateOne({ courseMarksId: courseMarksId, applicantProfileId: studentProfileId, status: "pending" }, { $set: { status: "discontinued" } });
+    const result = await ProjectApplication.updateMany({ courseMarksId: courseMarksId, applicantProfileId: studentProfileId, status: "pending" }, { $set: { status: "discontinued" } });
     // console.log(applications);
     return result;
 }

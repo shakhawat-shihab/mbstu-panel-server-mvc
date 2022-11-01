@@ -25,9 +25,28 @@ const studentResultSchema = mongoose.Schema({
         courseId: {
             type: ObjectId
         },
-        theoryFinal: {
+        semesterCode: {
             type: Number
-        }
+        },
+        theorySeventy: {
+            type: Number
+        },
+        theoryThirty: {
+            type: Number
+        },
+        labSixty: {
+            type: Number
+        },
+        labFourty: {
+            type: Number
+        },
+        projectSeventy: {
+            type: Number
+        },
+        projectThirty: {
+            type: Number
+        },
+
     }],
     semesterCode: {
         type: Number,

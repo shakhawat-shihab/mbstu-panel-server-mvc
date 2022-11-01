@@ -15,6 +15,8 @@ exports.getStudentResultService = async (studentProfileId) => {
     // // const result = await StudentResult.find({ semesterCode: 1 }).select('id').populate({ path: 'studentProfile', select: 'name' });
     // const result = await StudentResult.find({ semesterCode: semesterCode }).select('studentProfile id')
     // return result;
+    const result = await StudentResult.findOne({ studentProfile: studentProfileId })
+    return result
 }
 
 exports.getStudentSemesterCodeService = async (studentProfileId) => {
@@ -26,15 +28,17 @@ exports.getStudentSemesterCodeService = async (studentProfileId) => {
 }
 
 exports.publishResultService = async (data) => {
-    // console.log(data)
+    console.log(data)
     const studentResultValue = await StudentResult.find({
-        studentProfile: { $in: ['6354f187f9ff3a3298aa4d6e', '6358fde1356e33f6ca0d5033'] }
+        studentProfile: { $in: data.profileIdarray }
     })
     const query = [];
     console.log('studentResultValue  ==  ', studentResultValue)
     studentResultValue?.map(stu => {
         console.log('stu.coursesMarks  ==  ', stu.coursesMarks)
         //console.log('data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`]  ==  ', data?.students?.[`${stu?.id}`]?.[`cse1201`])
+
+        //if no result of a particular student is published, then "stu?.coursesMarks" array is empty
         if (stu?.coursesMarks.length == 0) {
             console.log('empty  ')
             const array = [];
@@ -52,32 +56,42 @@ exports.publishResultService = async (data) => {
             }
             query.push(val);
         }
+        //else,  result of a particular student is published, then "stu?.coursesMarks" array is non empty
         else {
             console.log('non empty  ')
             const array = []
             stu?.coursesMarks.map(x => {
-                // console.log(stu?.id, x?.courseCode, data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`])
-                //course already exists
+                console.log(stu?.id, x?.courseCode, data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`])
+                //course matched with new data, so update it
                 if (x?.courseCode === data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`]?.courseCode) {
-                    // console.log('inside    = ', stu?.id, x?.courseCode)
-                    //marks increased
-                    if (x?.theoryFinal < data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`]?.theoryFinal) {
-                        const nw = data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`];
-                        nw.theoryFinal = nw.theoryFinal;
-                        console.log('nw                 ==> ', nw)
-                        array.push(nw)
+                    const nw = data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`];
+                    if (x.type == 'theory') {
+                        // theory thirty percent will only update when student attend in CT exam
+                        !nw.theoryThirty && (nw.theoryThirty = x?.theoryThirty);
+                        array.push(nw);
                     }
-                    //marks not increased
-                    else {
-                        array.push(x)
+                    else if (x.type == 'lab') {
+                        !nw.labSixty && (nw.labSixty = x?.labSixty);
+                        array.push(nw);
                     }
+                    else if (x.type == 'project') {
+                        !nw.projectSeventy && (nw.projectSeventy = x?.projectSeventy);
+                        array.push(nw);
+                    }
+                    delete data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`];
                 }
-                //course not exist
+                //course in DB not matched with new data, so push previously stored data
                 else {
                     array.push(x)
-                    // query.push(val);
                 }
             })
+
+            // the courses which is in the req.data, but not in mongoDB
+            for (const course in data?.students?.[`${stu?.id}`]) {
+                console.log('course ==> ', data?.students?.[`${stu?.id}`]?.[`${course}`])
+                array.push(data?.students?.[`${stu?.id}`]?.[`${course}`])
+            }
+
             console.log('array === ', array)
             const val = {
                 updateOne: {
@@ -89,9 +103,10 @@ exports.publishResultService = async (data) => {
             }
             query.push(val);
         }
-        console.log(query);
+        console.log('query   ===>>> ', query);
 
     })
+    // console.log('data === ', data)
 
 
     // const updateQueries = [];
@@ -108,8 +123,6 @@ exports.publishResultService = async (data) => {
     //             },
     //         });
     //     }
-
-
     //     updateQueries.push({
     //         updateOne: {
     //             filter: { studentProfile: profileId },
@@ -118,6 +131,7 @@ exports.publishResultService = async (data) => {
     //     });
     // });
     // await this.itemModel.bulkWrite(updateQueries);
-    await StudentResult.bulkWrite(query);
-    return query;
+    const result = await StudentResult.bulkWrite(query);
+    return result;
+    // return query;
 }

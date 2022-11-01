@@ -22,7 +22,7 @@ router.put('/turn-in/project-teacher/:courseMarksId', verifyToken, marksControll
 
 
 router.get('/get-marks/exam-committe/:courseMarksId', verifyToken, marksController.getAllMarksOfStudentsOfACourse);
-router.patch('/update-marks/exam-committe/:courseMarksId', verifyToken, marksController.updateMarksExamCommittee);
+router.put('/update-marks/exam-committe/:courseMarksId', verifyToken, marksController.updateMarksExamCommittee);
 
 // state=1 (course Teacher)   //state=2 second examineer   //state=3 (third examineer)
 router.get('/taken-courses/:profileId/:state', marksController.getTakenCourses);
