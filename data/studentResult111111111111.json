@@ -1,0 +1,32 @@
+{
+    "profileIdarray": [
+        "1",
+        "2"
+    ],
+    "students": {
+        "ce17054": {
+            "cse1201": {
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343",
+                "theoryFinal": 30
+            },
+            "cse1202": {
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343",
+                "theoryFinal": 30
+            }
+        },
+        "ce17050": {
+            "cse1201": {
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343",
+                "theoryFinal": 30
+            },
+            "cse1202": {
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343",
+                "theoryFinal": 30
+            }
+        }
+    }
+}

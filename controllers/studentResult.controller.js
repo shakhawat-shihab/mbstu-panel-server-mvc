@@ -1,4 +1,4 @@
-const { getStudentOfPreviousSemesterService, getStudentResultService, getStudentSemesterCodeService } = require("../services/studentsResult.service");
+const { getStudentOfPreviousSemesterService, getStudentResultService, getStudentSemesterCodeService, publishResultService } = require("../services/studentsResult.service");
 
 exports.getStudentOfPreviousSemester = async (req, res, next) => {
     try {
@@ -49,6 +49,24 @@ exports.getStudentSemesterCode = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
+
+exports.publishResult = async (req, res, next) => {
+    try {
+        const data = await publishResultService(req.body)
+        res.status(200).json({
+            status: "success",
+            message: "successfully published",
+            data: data
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to publish",
             error: error.message,
         });
     }

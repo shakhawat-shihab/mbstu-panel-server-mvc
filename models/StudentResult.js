@@ -13,8 +13,21 @@ const studentResultSchema = mongoose.Schema({
         type: String
     },
     coursesMarks: [{
-        type: ObjectId,
-        ref: "marks"
+        courseCode: {
+            type: String
+        },
+        courseTitle: {
+            type: String
+        },
+        type: {
+            type: String
+        },
+        courseId: {
+            type: ObjectId
+        },
+        theoryFinal: {
+            type: Number
+        }
     }],
     semesterCode: {
         type: Number,

@@ -6,5 +6,7 @@ const router = express.Router();
 router.get('/:studentProfileId', studentResultController.getStudentResult);
 router.get('/get-semester-code/:studentProfileId', studentResultController.getStudentSemesterCode);
 
+router.put('/publish-result', studentResultController.publishResult);
+
 
 module.exports = router;

@@ -97,17 +97,21 @@ exports.getMarksOfCurrentSemesterService = async (semesterId) => {
 
 
     const semester = await Semester.findOne({ _id: semesterId })
-    // console.log(semester.courses)
-    // const marks = await Marks.findOne({
-    //     "_id": {
-    //         $in: semester.courses
-    //     }
-    // })
+        .populate('coursesMarks');
+
+    // console.log(semester)
+    let totalCreditOffered = 0;
+    const arrayOfCoursesId = []
+    semester?.coursesMarks.map(x => {
+        totalCreditOffered += x?.credit;
+        arrayOfCoursesId.push(x?._id)
+    })
+
     const marks = await Marks.aggregate([
         {
             $match: {
                 "_id": {
-                    $in: semester.coursesMarks
+                    $in: arrayOfCoursesId
                 }
             }
         },
@@ -125,6 +129,7 @@ exports.getMarksOfCurrentSemesterService = async (semesterId) => {
                     $push: {
                         courseCode: "$courseCode",
                         courseTitle: "$courseTitle",
+                        courseId: "$_id",
                         type: "$type",
                         credit: "$credit",
                         theoryAttendance: "$studentsMarks.theoryAttendance",
@@ -151,6 +156,6 @@ exports.getMarksOfCurrentSemesterService = async (semesterId) => {
         { $lookup: { from: 'profiles', localField: '_id.profile', foreignField: '_id', as: 'studentInfo' } }
     ])
 
-    return { marks, semester };
+    return { marks, totalCreditOffered, semester };
 }
 

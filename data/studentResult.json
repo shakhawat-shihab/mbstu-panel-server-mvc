@@ -1,0 +1,38 @@
+[
+    {
+        "_id": {
+            "id": "ce19001",
+            "profile": "6358fe3f356e33f6ca0d5047"
+        },
+        "marks": [
+            {
+                "courseCode": "cse1101",
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343"
+            },
+            {
+                "courseCode": "cse1101",
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343"
+            }
+        ]
+    },
+    {
+        "_id": {
+            "id": "ce19001",
+            "profile": "6358fe3f356e33f6ca0d5047"
+        },
+        "marks": [
+            {
+                "courseCode": "cse1101",
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343"
+            },
+            {
+                "courseCode": "cse1101",
+                "courseTitle": "Computer Basics & Programming Fundamentals",
+                "courseId": "635a8985feec64dc59fb9343"
+            }
+        ]
+    }
+]
