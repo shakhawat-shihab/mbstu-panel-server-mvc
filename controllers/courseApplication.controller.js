@@ -1,4 +1,5 @@
-const { createCourseApplicationService, getTotalCreditTakenService, getApplicationForADepartmentService, getApplicationForAcademicService, getApplicationForAHallService } = require("../services/courseApplication.service");
+const { createCourseApplicationService, getTotalCreditTakenService, getApplicationForADepartmentService, getApplicationForAcademicService, getApplicationForAHallService, approveApplicationByDeptService, getApplicationDetailsService, approveApplicationByAcademicSectionService, approveApplicationByHallService, denyApplicationByAcademicSectionService, denyApplicationByDeptService, denyApplicationByHallService } = require("../services/courseApplication.service");
+const { getCoursesMarksService } = require("../services/marks.service");
 
 
 
@@ -37,6 +38,26 @@ exports.getTotalCreditTaken = async (req, res, next) => {
     }
 }
 
+exports.getApplicationDetails = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { applicationId } = req.params;
+        const applications = await getApplicationDetailsService(applicationId);
+        res.status(200).json({
+            status: "success",
+            message: "Application details loaded successfully!",
+            data: applications,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
+
+
 exports.getApplicationForADepartment = async (req, res, next) => {
     try {
         const user = req.user;
@@ -58,6 +79,8 @@ exports.getApplicationForADepartment = async (req, res, next) => {
 exports.getApplicationForAHall = async (req, res, next) => {
     try {
         const user = req.user;
+        //check if the user is hall provost
+
         const applications = await getApplicationForAHallService(user?.hall?.hallId);
         res.status(200).json({
             status: "success",
@@ -90,3 +113,195 @@ exports.getApplicationForAcademic = async (req, res, next) => {
         });
     }
 }
+
+exports.approveApplicationByDept = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const data = req.body;
+
+        //1 
+        //add the student to the specific "marks" collection of courses
+        const result = await getCoursesMarksService(data)
+        // console.log('result ', result);
+        let results = result.map(async (course) => {
+            let found = false;
+            course.studentsMarks.map(async (student) => {
+                if (student.studentProfileId == data.studentProfileId) {
+                    found = true;
+                    return;
+                }
+            })
+            if (found == false) {
+                // push the student to that course
+                // console.log('not found me on ', course.courseCode);
+                course.setStudent({ id: data.id, studentProfileId: data.studentProfileId })
+                await course.save({ validateBeforeSave: false })
+            }
+        })
+        await Promise.all(results)
+
+        //2
+        // set application,,,,, { isChairmanVerified: true, chairmanMessage: data.chairmanMessage}
+        const output = await approveApplicationByDeptService(data);
+
+        res.status(200).json({
+            status: "success",
+            message: "Applications approved successfully By Department cahirman!",
+            data: output,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to approve",
+            error: error.message,
+        });
+    }
+}
+
+
+exports.approveApplicationByAcademicSection = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const data = req.body;
+
+        //check if the user is hall provost
+
+
+        //1 
+        //update the student payment info to "marks" collection of courses
+        const result = await getCoursesMarksService(data)
+        // console.log('result ', result);
+        let results = result.map(async (course) => {
+            let index = 0;
+            course.studentsMarks.map(async (student) => {
+                if (student.studentProfileId == data.studentProfileId) {
+                    course.setPayment(index)
+                    const r = await course.save({ validateBeforeSave: false })
+                    // console.log('r ', r)
+                }
+                index += 1;
+            })
+        })
+        await Promise.all(results)
+
+        //2
+        // set application,,,,, { isAcademicCommitteeVerified: true, status:'successfull', academicCommitteeMessage: data.chairmanMessage}
+        const output = await approveApplicationByAcademicSectionService(data);
+
+        res.status(200).json({
+            status: "success",
+            message: "Applications approved successfully by Academic Section",
+            data: output,
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to approve",
+            error: error.message,
+        });
+    }
+}
+
+exports.approveApplicationByHall = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const data = req.body;
+        //check if the user is hall provost of that hall
+
+        //1
+        // set application,,,,, { isHallVerified: true, hallMessage: data.hallMessage}
+        const output = await approveApplicationByHallService(data);
+
+        res.status(200).json({
+            status: "success",
+            message: "Applications approved successfully by Hall",
+            data: output,
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to approve",
+            error: error.message,
+        });
+    }
+}
+
+
+exports.denyApplicationByDept = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const data = req.body;
+        //check if the user is the dept chairman of that department
+
+        //1
+        // set application,,,,, { status: 'chairman-denied', chairmanMessage: data.chairmanMessage}
+        const output = await denyApplicationByDeptService(data);
+
+        res.status(200).json({
+            status: "success",
+            message: "Application denied  successfully by Department chairman",
+            data: output,
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to deny",
+            error: error.message,
+        });
+    }
+}
+
+exports.denyApplicationByAcademicSection = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const data = req.body;
+        //check if the user is the user is in academic committee
+
+        //1
+        // set application,,,,, { status: 'academic-committee-denied', academicCommitteeMessage: data.academicCommitteeMessage}
+        const output = await denyApplicationByAcademicSectionService(data);
+
+        res.status(200).json({
+            status: "success",
+            message: "Application denied  successfully by Academic committee",
+            data: output,
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to deny",
+            error: error.message,
+        });
+    }
+}
+
+exports.denyApplicationByHall = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const data = req.body;
+        //check if the user is the hall provost
+
+        //1
+        // set application,,,,, { status: 'hall-denied', hallMessage: data.hallMessage}
+        const output = await denyApplicationByHallService(data);
+
+        res.status(200).json({
+            status: "success",
+            message: "Application denied successfully by Hall",
+            data: output,
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to deny",
+            error: error.message,
+        });
+    }
+}
+
+

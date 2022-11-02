@@ -56,20 +56,29 @@ const courseApplicationSchema = mongoose.Schema({
     }],
     status: {
         type: String,
-        enum: ['pending', 'successful'],
+        enum: ['pending', 'successful', 'chairman-denied', 'hall-denied', 'academic-committee-denied'],
         default: 'pending'
     },
     isChairmanVerified: {
         type: Boolean,
         default: false
     },
+    chairmanMessage: {
+        type: String
+    },
     isHallVerified: {
         type: Boolean,
         default: false
     },
+    hallMessage: {
+        type: String
+    },
     isAcademicCommitteeVerified: {
         type: Boolean,
         default: false
+    },
+    academicCommitteeMessage: {
+        type: String
     },
 
 }, {
