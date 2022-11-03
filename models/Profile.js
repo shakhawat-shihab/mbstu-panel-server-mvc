@@ -28,7 +28,7 @@ const profileSchema = mongoose.Schema({
         unique: true,
         lowercase: true,
         validate: [validator.isEmail, "Please provide a valid email"],
-        required: [true, "Please provide a email"],
+        // required: [true, "Please provide a email"],
     },
     department: {
         type: String,

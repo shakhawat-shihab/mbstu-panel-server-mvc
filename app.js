@@ -12,7 +12,8 @@ const verifyToken = require("./middleware/verifyToken");
 const courseRoute = require("./routes/v1/course.route");
 const hallRoute = require("./routes/v1/hall.route");
 const courseApplicationRoute = require("./routes/v1/courseApplication.route");
-const ProjectApplicationRoute = require("./routes/v1/projectApplication.route");
+const projectApplicationRoute = require("./routes/v1/projectApplication.route");
+const profileRoute = require("./routes/v1/profile.route");
 
 
 //middlewares
@@ -27,7 +28,8 @@ app.use("/api/v1/student-result", studentResultRoute);
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/hall", hallRoute);
 app.use("/api/v1/course-application", courseApplicationRoute);
-app.use("/api/v1/project-application", ProjectApplicationRoute);
+app.use("/api/v1/project-application", projectApplicationRoute);
+app.use("/profile", profileRoute);
 
 
 
