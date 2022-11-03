@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const { updateMarksFromSemesterUpdate, createMarksService } = require("../services/marks.service");
-const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService, getMarksOfCurrentSemesterService, getCoursesOfRunningSemesterBySemesterCodeService, getRunningSemesterByExamCommitteeService, getRunningSemesterByExamCommitteeChairmanService, getCoursesBySemesterIdService } = require("../services/semester.service");
+const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService, getMarksOfCurrentSemesterService, getCoursesOfRunningSemesterBySemesterCodeService, getRunningSemesterByExamCommitteeService, getRunningSemesterByExamCommitteeChairmanService, getCoursesBySemesterIdService, updateExamTakenService } = require("../services/semester.service");
 const { getStudentOfPreviousSemesterService } = require("../services/studentsResult.service");
 
 
@@ -278,6 +278,26 @@ exports.getCoursesBySemesterId = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to load courses of a semester",
+            error: error.message,
+        });
+    }
+}
+
+exports.updateExamTaken = async (req, res, next) => {
+    try {
+        const { semesterId } = req.params;
+        const { user } = req;
+
+        const result = await updateExamTakenService(semesterId);
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully change state of exam taken",
+            data: result
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to change state of exam taken",
             error: error.message,
         });
     }

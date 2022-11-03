@@ -28,32 +28,51 @@ exports.getStudentSemesterCodeService = async (studentProfileId) => {
 }
 
 exports.publishResultService = async (data) => {
-    console.log(data)
+    // console.log('data =====>>> ', data)
     const studentResultValue = await StudentResult.find({
         studentProfile: { $in: data.profileIdarray }
     })
     const query = [];
-    console.log('studentResultValue  ==  ', studentResultValue)
+    // console.log('studentResultValue  ==>>>>   ', studentResultValue)
     studentResultValue?.map(stu => {
-        console.log('stu.coursesMarks  ==  ', stu.coursesMarks)
+        // console.log('stu.coursesMarks  ==>>>>  ', stu.coursesMarks)
         //console.log('data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`]  ==  ', data?.students?.[`${stu?.id}`]?.[`cse1201`])
 
         //if no result of a particular student is published, then "stu?.coursesMarks" array is empty
         if (stu?.coursesMarks.length == 0) {
             console.log('empty  ')
             const array = [];
-            for (const iterator in data?.students?.[`${stu?.id}`]) {
-                // console.log(iterator)
-                array.push(data?.students?.[`${stu?.id}`]?.[`${iterator}`]);
+            for (const course in data?.students?.[`${stu?.id}`]) {
+                if (course != 'creditEarned') {
+                    // console.log('course ==> ', data?.students?.[`${stu?.id}`]?.[`${course}`])
+                    array.push(data?.students?.[`${stu?.id}`]?.[`${course}`])
+                }
             }
-            const val = {
-                updateOne: {
-                    filter: { id: stu?.id },
-                    update: {
-                        $set: { coursesMarks: array }
+
+            let val = {}
+            // semester code match means the student is passed
+            if ((stu.semesterCode + 1) == data.semesterCode) {
+                // console.log('matched  ', data.semesterCode)
+                val = {
+                    updateOne: {
+                        filter: { id: stu?.id },
+                        update: {
+                            $set: { coursesMarks: array, semesterCode: data.semesterCode }
+                        }
                     }
                 }
             }
+            else {
+                val = {
+                    updateOne: {
+                        filter: { id: stu?.id },
+                        update: {
+                            $set: { coursesMarks: array }
+                        }
+                    }
+                }
+            }
+
             query.push(val);
         }
         //else,  result of a particular student is published, then "stu?.coursesMarks" array is non empty
@@ -61,7 +80,7 @@ exports.publishResultService = async (data) => {
             console.log('non empty  ')
             const array = []
             stu?.coursesMarks.map(x => {
-                console.log(stu?.id, x?.courseCode, data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`])
+                // console.log(stu?.id, x?.courseCode, data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`])
                 //course matched with new data, so update it
                 if (x?.courseCode === data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`]?.courseCode) {
                     const nw = data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`];
@@ -88,22 +107,43 @@ exports.publishResultService = async (data) => {
 
             // the courses which is in the req.data, but not in mongoDB
             for (const course in data?.students?.[`${stu?.id}`]) {
-                console.log('course ==> ', data?.students?.[`${stu?.id}`]?.[`${course}`])
-                array.push(data?.students?.[`${stu?.id}`]?.[`${course}`])
+                if (course != 'creditEarned') {
+                    // console.log('course ==> ', data?.students?.[`${stu?.id}`]?.[`${course}`])
+                    array.push(data?.students?.[`${stu?.id}`]?.[`${course}`])
+                }
             }
 
-            console.log('array === ', array)
-            const val = {
-                updateOne: {
-                    filter: { id: stu?.id },
-                    update: {
-                        $set: { coursesMarks: array }
+            let val = {}
+            // console.log('array === ', array)
+
+            // console.log('data.semesterCode   ', data.semesterCode)
+            // console.log('stu.semesterCode  ', stu.semesterCode)
+            if ((stu.semesterCode + 1) == data.semesterCode) {
+                // console.log('matched  ', data.semesterCode)
+                val = {
+                    updateOne: {
+                        filter: { id: stu?.id },
+                        update: {
+                            $set: { coursesMarks: array, semesterCode: data.semesterCode }
+                        }
                     }
                 }
             }
+            else {
+                val = {
+                    updateOne: {
+                        filter: { id: stu?.id },
+                        update: {
+                            $set: { coursesMarks: array }
+                        }
+                    }
+                }
+            }
+
+
             query.push(val);
         }
-        console.log('query   ===>>> ', query);
+        // console.log('query   ===>>> ', query);
 
     })
     // console.log('data === ', data)

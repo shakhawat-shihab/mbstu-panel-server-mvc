@@ -17,10 +17,9 @@ router.patch('/semester-course/:courseMarks', semesterController.updateSemesterC
 router.get('/courses-previous/:semesterCode', verifyToken, semesterController.getCoursesPreviousRunningSemester);
 router.get('/courses-running/:semesterCode', verifyToken, semesterController.getCoursesOfRunningSemesterBySemesterCode)
 
+router.put('/exam-taken-done/:semesterId', verifyToken, semesterController.updateExamTaken)
 
 router.get('/courses/:semesterId', verifyToken, semesterController.getCoursesBySemesterId)
-
-
 
 router.get('/marks-of-all-course/:semesterId', verifyToken, semesterController.getMarksOfCurrentSemester);
 

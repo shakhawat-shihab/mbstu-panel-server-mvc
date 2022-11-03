@@ -52,6 +52,14 @@ const semesterSchema = mongoose.Schema({
     isRunning: {
         type: Boolean,
         default: true
+    },
+    isResultPublished: {
+        type: Boolean,
+        default: false
+    },
+    isExamTaken: {
+        type: Boolean,
+        default: false
     }
 
 

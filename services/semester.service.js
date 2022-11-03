@@ -17,18 +17,16 @@ exports.updateSemesterService = async (id, semester) => {
     const result = await Semester.updateOne({ _id: id }, { $set: semester });
     return result;
 }
-// exports.getStudentsWithCoursesService = async (semesterId) => {
-//     // const result = await Semester.find({ _id: semesterId }).select('studentCourses').populate({ path: 'studentCourses.studentId', select: 'id name' });
-//     const result = await Semester.find({ _id: semesterId }).select('studentsCourses')
-//         .populate({ path: 'studentsCourses.studentProfileId', select: 'id name' })
-//         .populate({ path: 'studentsCourses.coursesMarksList', select: 'courseTitle -_id courseCode' })
-//     return result;
-// }
 
+exports.updateExamTakenService = async (id) => {
+    const result = await Semester.updateOne({ _id: id }, { $set: { isExamTaken: true } });
+    return result;
+}
 
 
 exports.getCoursesOfRunningSemesterBySemesterCodeService = async (semesterCode, dept) => {
-    const courses = await Semester.findOne({ semesterCode: semesterCode, department: dept, isRunning: true })
+    // isRunning: true    ==> isExamTaken:false
+    const courses = await Semester.findOne({ semesterCode: semesterCode, department: dept, isExamTaken: false })
         .select('coursesMarks name degree')
         .populate({ path: 'coursesMarks', select: 'courseCode courseTitle credit type teacher semesterId' })
     // console.log(semester.courses)
@@ -55,6 +53,12 @@ exports.getRunningSemesterByExamCommitteeChairmanService = async (profileId) => 
     // console.log('profileId ', profileId);
     const result = await Semester.find({ examCommitteeChairman: { $eq: profileId } })
         .select('  name semesterCode department session degree examCommittee examCommitteeChairman ')
+    return result;
+}
+
+exports.publishResultStateChangeSemesterService = async (semesterId) => {
+    // console.log('semesterId ', semesterId);
+    const result = await Semester.updateOne({ _id: semesterId }, { $set: { isRunning: false, isResultPublished: true } })
     return result;
 }
 
