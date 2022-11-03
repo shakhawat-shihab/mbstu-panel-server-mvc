@@ -44,6 +44,9 @@ const profileSchema = mongoose.Schema({
         type: String,
         validate: [validator.isURL, "Please provide a url"]
     },
+    address: {
+        type: String,
+    },
 
 }, {
     timestamps: true

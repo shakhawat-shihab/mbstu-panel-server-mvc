@@ -29,7 +29,7 @@ app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/hall", hallRoute);
 app.use("/api/v1/course-application", courseApplicationRoute);
 app.use("/api/v1/project-application", projectApplicationRoute);
-app.use("/profile", profileRoute);
+app.use("/api/v1/profile", profileRoute);
 
 
 
