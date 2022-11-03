@@ -119,11 +119,36 @@ exports.approveApplicationByDept = async (req, res, next) => {
         const user = req.user;
         const data = req.body;
 
+        //regularCourses and backlogCourses
+        // console.log('data ', data)
+        const { regularCourses, backlogCourses } = data;
+
         //1 
-        //add the student to the specific "marks" collection of courses
-        const result = await getCoursesMarksService(data)
-        // console.log('result ', result);
-        let results = result.map(async (course) => {
+        //add the student to the specific "marks" collection of courses  For REGULAR
+        const resultRegular = await getCoursesMarksService(regularCourses)
+        // console.log('resultRegular ', resultRegular);
+        let resultsRegular = resultRegular.map(async (course) => {
+            let found = false;
+            course.studentsMarks.map(async (student) => {
+                if (student.studentProfileId == data.studentProfileId) {
+                    found = true;
+                    return;
+                }
+            })
+            if (found == false) {
+
+                // push the student to that course
+                console.log('not found me on regular ', course.courseCode);
+                course.setStudent({ id: data.id, studentProfileId: data.studentProfileId })
+                await course.save({ validateBeforeSave: false })
+            }
+        })
+        await Promise.all(resultsRegular)
+
+        //add the student to the specific "marks" collection of courses For BACKLOG
+        const resultBacklog = await getCoursesMarksService(backlogCourses)
+        // console.log('resultBacklog ', resultBacklog);
+        let resultsBacklog = resultBacklog.map(async (course) => {
             let found = false;
             course.studentsMarks.map(async (student) => {
                 if (student.studentProfileId == data.studentProfileId) {
@@ -133,12 +158,13 @@ exports.approveApplicationByDept = async (req, res, next) => {
             })
             if (found == false) {
                 // push the student to that course
-                // console.log('not found me on ', course.courseCode);
-                course.setStudent({ id: data.id, studentProfileId: data.studentProfileId })
+                console.log('not found me on backlog ', course.courseCode);
+                course.setStudent({ id: data.id, isBacklog: true, studentProfileId: data.studentProfileId })
                 await course.save({ validateBeforeSave: false })
             }
         })
-        await Promise.all(results)
+        await Promise.all(resultsBacklog)
+
 
         //2
         // set application,,,,, { isChairmanVerified: true, chairmanMessage: data.chairmanMessage}

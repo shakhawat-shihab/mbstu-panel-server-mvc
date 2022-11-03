@@ -540,7 +540,7 @@ exports.updateMarksExamCommittee = async (req, res, next) => {
 exports.addStudent = async (req, res, next) => {
     try {
         const data = req.body;
-        const result = await getCoursesMarksService(data)
+        const result = await getCoursesMarksService(data.courses)
         // console.log('result ', result);
         let results = result.map(async (course) => {
             let found = false;
@@ -576,7 +576,7 @@ exports.addStudent = async (req, res, next) => {
 exports.addPaymentInfo = async (req, res, next) => {
     try {
         const data = req.body;
-        const result = await getCoursesMarksService(data)
+        const result = await getCoursesMarksService(data.courses)
         // console.log('result ', result);
         let results = result.map(async (course) => {
             let index = 0;

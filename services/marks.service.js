@@ -9,7 +9,7 @@ exports.createMarksService = async (data) => {
 
 exports.getCoursesMarksService = async (data) => {
     // console.log(data);
-    const result = await Marks.find({ _id: { $in: data.courses } });
+    const result = await Marks.find({ _id: { $in: data } });
     return result;
 }
 

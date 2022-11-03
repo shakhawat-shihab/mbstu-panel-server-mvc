@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const { getMarksService } = require("../services/marks.service");
-const { createProjectApplicationService, getProjectCoursesService, getMyProposalForACourseService, getProposalDetailsService, getProposalToTeacherForACourseService, updateProposalToApproveService, updateProposalToDiscontinuedService, getAcceptedProposalService } = require("../services/projectApplication.service");
+const { createProjectApplicationService, getProjectCoursesService, getMyProposalForACourseService, getProposalDetailsService, getProposalToTeacherForACourseService, updateProposalToApproveService, updateProposalToDiscontinuedService, getAcceptedProposalService, updateProposalToDenyService } = require("../services/projectApplication.service");
 
 exports.createProjectApplication = async (req, res, next) => {
     try {
@@ -89,6 +89,40 @@ exports.getAcceptedProposal = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to load proposals.",
+            error: error.message,
+        });
+    }
+}
+
+exports.updateProposalToDeny = async (req, res, next) => {
+    try {
+        const { profileId } = req.user;
+        const { proposalId } = req.params;
+
+        //load the proposal, so that we can get courseId & studentProfileId from the proposal
+        const application = await getProposalDetailsService(proposalId)
+        if (!application) {
+            return res.status(400).json({
+                status: "fail",
+                message: "This application not exist",
+            });
+        }
+        if (profileId != application?.teacher?.teacherProfileId) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not authorized for these",
+            });
+        }
+        await updateProposalToDenyService(proposalId)
+
+        res.status(200).json({
+            status: "success",
+            message: "Proposal denied successfully!",
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to deny proposal.",
             error: error.message,
         });
     }

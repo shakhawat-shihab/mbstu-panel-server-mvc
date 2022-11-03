@@ -15,25 +15,29 @@ exports.profileUpdate = async (req, res, next) => {
             const output = await Profile.findOne({ _id: user?.profileId })
             //if image exist then remove it
             if (output?.imageURL) {
-                let cloudinary_id = output?.imageURL.split('/')[output?.imageURL.split('/').length - 1]
-                //console.log(cloudinary_id);
+
+                // "array splitted by  '/' "
+                const array = output?.imageURL.split('/')
+
+                // "folder name/cloudinary_id.extension"
+                cloudinary_id = array[array.length - 2] + '/' + array[array.length - 1]
+                // console.log('with extension  == ', cloudinary_id)
+
+                // "folder name/cloudinary_id"
                 cloudinary_id = cloudinary_id?.split('.')[0]
-                //console.log(cloudinary_id);
-                const r = await cloudinary.uploader.destroy(cloudinary_id, {
-                    folder: 'test-directory',
-                    // use_filename: true
-                });
-                console.log('r ', r)
+                //console.log('without extension  == ', cloudinary_id);
+
+                const r = await cloudinary.uploader.destroy(cloudinary_id);
+                //console.log('r ', r)
             }
         }
 
         //upload image to cloudinary
-        console.log(req.file.path)
         const imageCloudinary = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'test-directory',
+            folder: 'mbstu-panel',
             use_filename: true
         })
-        console.log('imageCloudinary ', imageCloudinary)
+        // console.log('imageCloudinary ', imageCloudinary)
 
 
         let profile = {

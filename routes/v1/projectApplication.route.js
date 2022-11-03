@@ -9,6 +9,7 @@ router.get('/find-project-course', verifyToken, projectApplicationController.get
 router.get('/my-proposal/:courseId', verifyToken, projectApplicationController.getMyProposalForACourse)
 router.get('/proposal-for-teacher/:courseId', verifyToken, projectApplicationController.getProposalToTeacherForACourse)
 router.put('/approve-proposal/:proposalId', verifyToken, projectApplicationController.updateProposalToApprove)
+router.put('/deny-proposal/:proposalId', verifyToken, projectApplicationController.updateProposalToDeny)
 router.get('/check-any-accepted/:courseId', verifyToken, projectApplicationController.getAcceptedProposal)
 
 

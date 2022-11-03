@@ -151,6 +151,10 @@ const marksSchema = mongoose.Schema({
         isPaid: {
             type: Boolean,
             default: false
+        },
+        isBacklog: {
+            type: Boolean,
+            default: false
         }
     }],
     isSubmittedByCourseTeacher: {

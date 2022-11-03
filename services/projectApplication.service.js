@@ -64,6 +64,12 @@ exports.updateProposalToApproveService = async (proposalId) => {
     return result;
 }
 
+exports.updateProposalToDenyService = async (proposalId) => {
+    const result = await ProjectApplication.updateOne({ _id: proposalId }, { $set: { status: "denied" } });
+    // console.log(applications);
+    return result;
+}
+
 exports.updateProposalToDiscontinuedService = async (courseMarksId, studentProfileId) => {
     const result = await ProjectApplication.updateMany({ courseMarksId: courseMarksId, applicantProfileId: studentProfileId, status: "pending" }, { $set: { status: "discontinued" } });
     // console.log(applications);
