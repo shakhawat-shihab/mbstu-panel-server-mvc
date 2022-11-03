@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const validator = require('validator')
+const validator = require('validator');
 const { ObjectId } = mongoose.Schema.Types;
 const hallSchema = mongoose.Schema({
     name: {
@@ -39,7 +39,8 @@ const hallSchema = mongoose.Schema({
             type: String,
         },
         profileId: {
-            type: ObjectId
+            type: ObjectId,
+            ref: 'profile'
         }
     },
     studentsIds: [{
@@ -53,7 +54,9 @@ const hallSchema = mongoose.Schema({
     timestamps: true
 })
 
-
+hallSchema.methods.setHallProvost = function (data) {
+    this.hallProvost = data;
+};
 
 const Hall = mongoose.model("hall", hallSchema);
 

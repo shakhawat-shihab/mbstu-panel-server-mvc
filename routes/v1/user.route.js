@@ -9,8 +9,9 @@ router.post('/signup', userController.signUp);
 router.post('/login', userController.logIn);
 router.get('/me', verifyToken, userController.getMe);
 router.get('/email/:email', userController.findUserLikeEmail);
-router.patch('/add-teacher/:userId', verifyToken, userController.addTeacher);
-router.patch('/add-dept-chairman/:userId', verifyToken, userController.addDeptChairman);
+router.put('/add-teacher/:userId', verifyToken, userController.addTeacher);
+router.put('/add-dept-chairman/:userId', verifyToken, userController.addDeptChairman);
+router.put('/add-hall-provost/:userId', verifyToken, userController.addHallProvost);
 router.get('/teacher', userController.getTeacherByDept);
 
 

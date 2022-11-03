@@ -6,6 +6,7 @@ const { createProfileService } = require("../services/profile.service");
 const { idCodeToDept } = require("../functions/convertFunction");
 const { createStudentResultService } = require("../services/studentsResult.service");
 const { findStudentInhallServic, findStudentInhallService } = require("../services/hall.service");
+const Hall = require("../models/Hall");
 
 
 exports.getUser = async (req, res, next) => {
@@ -330,6 +331,60 @@ exports.getTeacherByDept = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to add Teacher",
+            error: error.message,
+        });
+    }
+}
+
+exports.addHallProvost = async (req, res, next) => {
+    try {
+        const { hallId, hallProvostProfileId, hallProvostName, hallName } = req.body;
+        const { department } = req.user;
+
+        //get hall data
+        const hall = await Hall.findOne({ _id: hallId });
+
+        //get current hall Provost
+        const currentHallProvost = hall.hallProvost;
+        console.log('currentHallProvost ', currentHallProvost)
+
+
+        //update user ====>> remove the hall info from current hall provost user info
+        const o = await User.updateOne({ profile: currentHallProvost?.profileId }, { $set: { hall: undefined, isHallProvost: false } })
+        console.log(o)
+
+        //set new hall provost
+        hall.setHallProvost({ name: hallProvostName, profileId: hallProvostProfileId });
+        const result = await hall.save()
+        // console.log(result)
+
+
+        ////add the hall info to current hall provost user info
+        const output = await User.updateOne({ profile: hallProvostProfileId }, { $set: { hall: { name: hallName, hallId: hallId }, isHallProvost: true } })
+        console.log(output)
+
+
+
+        // if (result?.modifiedCount) {
+        //     return res.status(200).json({
+        //         status: "success",
+        //         message: "Successfully added Hall Provost",
+        //     });
+        // }
+        // res.status(400).json({
+        //     status: "faill",
+        //     message: "Failed to add Hall Provost",
+        // });
+
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully added Hall Provost",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add Hall Provost",
             error: error.message,
         });
     }

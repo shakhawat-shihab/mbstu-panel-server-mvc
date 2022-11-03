@@ -38,6 +38,14 @@ exports.getApplicationDetailsService = async (applicationId) => {
     return result;
 }
 
+exports.getApplicationForAStudentService = async (profileId) => {
+    const result = await CourseApplication.find({ applicantProfileId: profileId })
+        .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
+        .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
+        .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' })
+    return result;
+}
+
 
 exports.getTotalCreditTakenService = async (id) => {
     const result = await CourseApplication.find({ applicantProfileId: id, status: 'pending' })

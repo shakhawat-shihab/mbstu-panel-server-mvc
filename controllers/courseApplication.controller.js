@@ -1,4 +1,4 @@
-const { createCourseApplicationService, getTotalCreditTakenService, getApplicationForADepartmentService, getApplicationForAcademicService, getApplicationForAHallService, approveApplicationByDeptService, getApplicationDetailsService, approveApplicationByAcademicSectionService, approveApplicationByHallService, denyApplicationByAcademicSectionService, denyApplicationByDeptService, denyApplicationByHallService } = require("../services/courseApplication.service");
+const { createCourseApplicationService, getTotalCreditTakenService, getApplicationForADepartmentService, getApplicationForAcademicService, getApplicationForAHallService, approveApplicationByDeptService, getApplicationDetailsService, approveApplicationByAcademicSectionService, approveApplicationByHallService, denyApplicationByAcademicSectionService, denyApplicationByDeptService, denyApplicationByHallService, getApplicationForAStudentService } = require("../services/courseApplication.service");
 const { getCoursesMarksService } = require("../services/marks.service");
 
 
@@ -57,6 +57,24 @@ exports.getApplicationDetails = async (req, res, next) => {
     }
 }
 
+
+exports.getApplicationForAStudent = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const applications = await getApplicationForAStudentService(user?.profileId);
+        res.status(200).json({
+            status: "success",
+            message: "Applications loaded successfully!",
+            data: applications,
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load",
+            error: error.message,
+        });
+    }
+}
 
 exports.getApplicationForADepartment = async (req, res, next) => {
     try {

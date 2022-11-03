@@ -230,6 +230,7 @@ exports.getCoursesPreviousRunningSemester = async (req, res, next) => {
     try {
         const { semesterCode } = req.params;
         const { user } = req;
+        console.log(semesterCode);
         const result = await getCoursesPreviousRunningSemesterService(semesterCode, user?.department, user?.profileId);
         return res.status(200).json({
             status: "success",

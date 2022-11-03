@@ -7,6 +7,8 @@ const router = express.Router();
 router.post('/create', courseApplicationController.createCourseApplication)
 router.get('/total-credit-taken/:profileId', courseApplicationController.getTotalCreditTaken)
 
+router.get('/get-my-applications', verifyToken, courseApplicationController.getApplicationForAStudent)
+
 router.get('/get-applications-department', verifyToken, courseApplicationController.getApplicationForADepartment)
 router.get('/get-applications-hall', verifyToken, courseApplicationController.getApplicationForAHall)
 router.get('/get-applications-academic', verifyToken, courseApplicationController.getApplicationForAcademic)
