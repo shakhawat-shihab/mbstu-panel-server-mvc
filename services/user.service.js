@@ -47,6 +47,11 @@ exports.addDeptChairmanService = async (_id, department) => {
     return result;
 }
 
+exports.addAcademicCommitteeService = async (_id) => {
+    const result = await User.updateOne({ _id }, { $set: { isAcademicCommittee: true } })
+    return result;
+}
+
 exports.getTeacherByDeptService = async (queries) => {
     // console.log(queries);
     const result = await User.find({ isTeacher: true, department: { $in: queries?.departmentArray } })

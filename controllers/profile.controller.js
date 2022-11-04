@@ -9,8 +9,9 @@ exports.profileUpdate = async (req, res, next) => {
         const data = req.body;
 
 
+        let imageCloudinary = {};
         //if image is provided, then delete previous image
-        if (req.file.path) {
+        if (req?.file?.path) {
             //get the profile info
             const output = await Profile.findOne({ _id: user?.profileId })
             //if image exist then remove it
@@ -29,22 +30,25 @@ exports.profileUpdate = async (req, res, next) => {
 
                 const r = await cloudinary.uploader.destroy(cloudinary_id);
                 //console.log('r ', r)
+
             }
+            //upload image to cloudinary
+            imageCloudinary = await cloudinary.uploader.upload(req.file.path, {
+                folder: 'mbstu-panel',
+                use_filename: true
+            })
+            // console.log('imageCloudinary ', imageCloudinary)
+
         }
 
-        //upload image to cloudinary
-        const imageCloudinary = await cloudinary.uploader.upload(req.file.path, {
-            folder: 'mbstu-panel',
-            use_filename: true
-        })
-        // console.log('imageCloudinary ', imageCloudinary)
+
 
 
         let profile = {
             firstName: data?.firstName,
             lastName: data?.lastName,
             contactNumber: data?.contactNumber,
-            imageURL: imageCloudinary.secure_url,
+            imageURL: imageCloudinary?.secure_url,
             address: data?.address,
         };
 

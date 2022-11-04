@@ -1,4 +1,4 @@
-const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService } = require("../services/user.service");
+const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService, addAcademicCommitteeService } = require("../services/user.service");
 const User = require("../models/User");
 const { generateToken } = require("../utils/token");
 const { sendMailWithGmail } = require("../utils/email");
@@ -287,6 +287,26 @@ exports.addTeacher = async (req, res, next) => {
     }
 }
 
+exports.addAcademicCommittee = async (req, res, next) => {
+    try {
+        const { userId } = req.body;
+        const result = await addAcademicCommitteeService(userId);
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully added academic committee member",
+        });
+
+    } catch (error) {
+
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to add academic committee member",
+            error: error.message,
+        });
+    }
+}
+
 exports.addDeptChairman = async (req, res, next) => {
     try {
         const { userId } = req.params;
@@ -336,6 +356,7 @@ exports.getTeacherByDept = async (req, res, next) => {
     }
 }
 
+
 exports.addHallProvost = async (req, res, next) => {
     try {
         const { hallId, hallProvostProfileId, hallProvostName, hallName } = req.body;
@@ -348,9 +369,8 @@ exports.addHallProvost = async (req, res, next) => {
         const currentHallProvost = hall.hallProvost;
         console.log('currentHallProvost ', currentHallProvost)
 
-
         //update user ====>> remove the hall info from current hall provost user info
-        const o = await User.updateOne({ profile: currentHallProvost?.profileId }, { $set: { hall: undefined, isHallProvost: false } })
+        const o = await User.updateOne({ profile: currentHallProvost?.profileId }, { $set: { hall: {}, isHallProvost: false } })
         console.log(o)
 
         //set new hall provost
@@ -362,19 +382,6 @@ exports.addHallProvost = async (req, res, next) => {
         ////add the hall info to current hall provost user info
         const output = await User.updateOne({ profile: hallProvostProfileId }, { $set: { hall: { name: hallName, hallId: hallId }, isHallProvost: true } })
         console.log(output)
-
-
-
-        // if (result?.modifiedCount) {
-        //     return res.status(200).json({
-        //         status: "success",
-        //         message: "Successfully added Hall Provost",
-        //     });
-        // }
-        // res.status(400).json({
-        //     status: "faill",
-        //     message: "Failed to add Hall Provost",
-        // });
 
         return res.status(200).json({
             status: "success",

@@ -139,21 +139,27 @@ exports.getTakenCoursesService = async (profileId, state) => {
         //     .populate({ path: 'semesterId', select: 'name session' })
         //     .sort('semesterId.session')
         result = await Marks.find({ $or: [{ 'teacher.teacherProfileId': profileId }, { teacherList: { $eq: profileId } }] })
-            .populate({ path: 'semesterId', select: 'name session' })
+            .populate({ path: 'semesterId', select: 'name session isRunning' })
             .sort('semesterId.session')
 
     }
     else if (state == 2) {
         result = await Marks.find({ 'secondExaminer.teacherProfileId': profileId })
-            .populate({ path: 'semesterId', select: 'name session' })
+            .populate({ path: 'semesterId', select: 'name session isRunning' })
             .sort(-'semesterId.semesterCode')
     }
     else if (state == 3) {
         result = await Marks.find({ 'thirdExaminer.teacherProfileId': profileId })
-            .populate({ path: 'semesterId', select: 'name session' })
+            .populate({ path: 'semesterId', select: 'name session isRunning' })
             .sort(-'semesterId.semesterCode')
     }
-    return result;
+    const arrayOfrunningCourses = []
+    result.map(x => {
+        if (x?.semesterId?.isRunning == true) {
+            arrayOfrunningCourses.push(x)
+        }
+    })
+    return arrayOfrunningCourses;
 }
 
 exports.addStudentService = async (data) => {
