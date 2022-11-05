@@ -22,7 +22,7 @@ exports.createCourseApplication = async (req, res, next) => {
 
 exports.getTotalCreditTaken = async (req, res, next) => {
     try {
-        const { profileId } = req.params;
+        const { profileId } = req?.user;
         const totalCredit = await getTotalCreditTakenService(profileId);
         res.status(200).json({
             status: "success",

@@ -40,7 +40,8 @@ exports.getStudentResult = async (req, res, next) => {
 
 exports.getStudentSemesterCode = async (req, res, next) => {
     try {
-        const data = await getStudentSemesterCodeService(req.params.studentProfileId)
+        // console.log(req?.user?.profileId)
+        const data = await getStudentSemesterCodeService(req?.user?.profileId)
         res.status(200).json({
             status: "success",
             message: "successfully loaded",
