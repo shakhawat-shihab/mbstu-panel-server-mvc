@@ -7,6 +7,7 @@ exports.createCourseApplicationService = async (data) => {
 
 exports.getApplicationForADepartmentService = async (department) => {
     const result = await CourseApplication.find({ department: department, isChairmanVerified: false, status: 'pending' })
+        .limit(10)
         .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
         .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
         .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' })

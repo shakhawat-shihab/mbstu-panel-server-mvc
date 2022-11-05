@@ -1,6 +1,6 @@
 module.exports = (...role) => {
     return (req, res, next) => {
-        // const userRole = req.user.role;
+        // const userRole = req.user;
         const userRole = [];
         req?.user?.isStudent && userRole.push('student');
         req?.user?.isTeacher && userRole.push('teacher');
