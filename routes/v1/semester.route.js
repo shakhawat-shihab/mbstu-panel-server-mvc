@@ -7,8 +7,6 @@ const verifyToken = require("../../middleware/verifyToken");
 const router = express.Router();
 
 
-
-
 router.post('/', verifyToken, authorization('dept-chairman'), semesterController.createSemester);
 
 router.patch('/semester-info/:semesterId', authorization('dept-chairman'), semesterController.updateSemester);

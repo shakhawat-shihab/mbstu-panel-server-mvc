@@ -26,7 +26,7 @@ exports.getStudentResult = async (req, res, next) => {
         res.status(200).json({
             status: "success",
             message: "successfully loaded",
-            result: data
+            data: data
         });
 
     } catch (error) {

@@ -16,10 +16,10 @@ const semesterSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    session: {
-        type: String,
-        required: true
-    },
+    // session: {
+    //     type: String,
+    //     required: true
+    // },
     degree: {
         type: String,
         required: true
@@ -60,9 +60,13 @@ const semesterSchema = mongoose.Schema({
     isExamTaken: {
         type: Boolean,
         default: false
+    },
+    examFinishDate: {
+        type: Date,
+    },
+    resultPublishDate: {
+        type: Date,
     }
-
-
 }, {
     timestamps: true
 })

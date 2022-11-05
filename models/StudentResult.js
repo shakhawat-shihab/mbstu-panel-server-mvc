@@ -22,6 +22,9 @@ const studentResultSchema = mongoose.Schema({
         type: {
             type: String
         },
+        credit: {
+            type: Number
+        },
         courseId: {
             type: ObjectId
         },
@@ -51,6 +54,11 @@ const studentResultSchema = mongoose.Schema({
     semesterCode: {
         type: Number,
     },
+    semesterIds: [{
+        type: ObjectId,
+        ref: 'semester'
+    }
+    ]
 }, {
     timestamps: true
 })

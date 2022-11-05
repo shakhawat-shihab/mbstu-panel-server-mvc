@@ -1,3 +1,4 @@
+const Semester = require("../models/Semester");
 const StudentResult = require("../models/StudentResult");
 
 exports.createStudentResultService = async (data) => {
@@ -16,6 +17,7 @@ exports.getStudentResultService = async (studentProfileId) => {
     // const result = await StudentResult.find({ semesterCode: semesterCode }).select('studentProfile id')
     // return result;
     const result = await StudentResult.findOne({ studentProfile: studentProfileId })
+        .populate('semesterIds')
     return result
 }
 
@@ -27,11 +29,19 @@ exports.getStudentSemesterCodeService = async (studentProfileId) => {
     return result;
 }
 
+
+
+/*update semester code if minimum 1 course is pased and current semester code = publishing result semester code*/
 exports.publishResultService = async (data) => {
     // console.log('data =====>>> ', data)
+    const semesterId = data?.semesterId;
+    // const semester = await Semester.findOne({ _id: semesterId });
+    // console.log('semester   ==> ', semester)
+
     const studentResultValue = await StudentResult.find({
         studentProfile: { $in: data.profileIdarray }
     })
+
     const query = [];
     // console.log('studentResultValue  ==>>>>   ', studentResultValue)
     studentResultValue?.map(stu => {
@@ -51,13 +61,15 @@ exports.publishResultService = async (data) => {
 
             let val = {}
             // semester code match means the student is passed
-            if ((stu.semesterCode + 1) == data.semesterCode) {
+            if ((stu.semesterCode + 1) == data.semesterCode && data?.students?.[`${stu?.id}`]?.[`creditEarned`] > 0) {
                 // console.log('matched  ', data.semesterCode)
+                // console.log('pushinghgggggggggggggggggggg  first')
                 val = {
                     updateOne: {
                         filter: { id: stu?.id },
                         update: {
-                            $set: { coursesMarks: array, semesterCode: data.semesterCode }
+                            $set: { coursesMarks: array, semesterCode: data.semesterCode },
+                            $push: { semesterIds: semesterId },
                         }
                     }
                 }
@@ -118,13 +130,15 @@ exports.publishResultService = async (data) => {
 
             // console.log('data.semesterCode   ', data.semesterCode)
             // console.log('stu.semesterCode  ', stu.semesterCode)
-            if ((stu.semesterCode + 1) == data.semesterCode) {
+            if ((stu.semesterCode + 1) == data.semesterCode && data?.students?.[`${stu?.id}`]?.[`creditEarned`] > 0) {
                 // console.log('matched  ', data.semesterCode)
+                // console.log('pushinghgggggggggggggggggggg')
                 val = {
                     updateOne: {
                         filter: { id: stu?.id },
                         update: {
-                            $set: { coursesMarks: array, semesterCode: data.semesterCode }
+                            $set: { coursesMarks: array, semesterCode: data.semesterCode },
+                            $push: { semesterIds: semesterId },
                         }
                     }
                 }
@@ -171,7 +185,8 @@ exports.publishResultService = async (data) => {
     //     });
     // });
     // await this.itemModel.bulkWrite(updateQueries);
+
     const result = await StudentResult.bulkWrite(query);
-    return result;
-    // return query;
+    // return result;
+    return query;
 }

@@ -210,10 +210,9 @@ exports.approveApplicationByAcademicSection = async (req, res, next) => {
 
         //check if the user is hall provost
 
-
         //1 
         //update the student payment info to "marks" collection of courses
-        const result = await getCoursesMarksService(data)
+        const result = await getCoursesMarksService(data.courses)
         // console.log('result ', result);
         let results = result.map(async (course) => {
             let index = 0;

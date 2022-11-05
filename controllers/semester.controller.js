@@ -1,4 +1,5 @@
 const Marks = require("../models/Marks");
+const Semester = require("../models/Semester");
 const { updateMarksFromSemesterUpdate, createMarksService } = require("../services/marks.service");
 const { createSemesterService, findSemesterService, updateSemesterService, getCoursesPreviousRunningSemesterService, getMarksOfCurrentSemesterService, getCoursesOfRunningSemesterBySemesterCodeService, getRunningSemesterByExamCommitteeService, getRunningSemesterByExamCommitteeChairmanService, getCoursesBySemesterIdService, updateExamTakenService } = require("../services/semester.service");
 const { getStudentOfPreviousSemesterService } = require("../services/studentsResult.service");
@@ -9,15 +10,15 @@ exports.createSemester = async (req, res, next) => {
         const { courses, ...otherInfo } = req.body;
 
         // 1
-        const findSemesterResult = await findSemesterService({ semesterCode: otherInfo.semesterCode, session: otherInfo.session })
+        // const findSemesterResult = await findSemesterService({ semesterCode: otherInfo.semesterCode, session: otherInfo.session })
 
         //2
-        if (findSemesterResult) {
-            return res.status(400).json({
-                status: "fail",
-                message: `This semester is already created for session ${req?.body?.session}`,
-            });
-        }
+        // if (findSemesterResult) {
+        //     return res.status(400).json({
+        //         status: "fail",
+        //         message: `This semester is already created for session ${req?.body?.session}`,
+        //     });
+        // }
 
         //3
         // create semester
@@ -289,6 +290,24 @@ exports.updateExamTaken = async (req, res, next) => {
         const { semesterId } = req.params;
         const { user } = req;
 
+        const semester = await Semester.findOne({ _id: semesterId })
+        // console.log(semester?.examCommitteeChairman);
+        // console.log(user.profileId);
+
+        if (semester?.examCommitteeChairman != user.profileId) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not exam committe chairman",
+            });
+        }
+
+        if (semester?.examFinishDate) {
+            return res.status(400).json({
+                status: "fail",
+                message: "Exam already taken",
+            });
+
+        }
         const result = await updateExamTakenService(semesterId);
         return res.status(200).json({
             status: "success",

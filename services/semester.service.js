@@ -19,7 +19,8 @@ exports.updateSemesterService = async (id, semester) => {
 }
 
 exports.updateExamTakenService = async (id) => {
-    const result = await Semester.updateOne({ _id: id }, { $set: { isExamTaken: true } });
+    const date = new Date();
+    const result = await Semester.updateOne({ _id: id }, { $set: { isExamTaken: true, examFinishDate: date } });
     return result;
 }
 
@@ -58,7 +59,8 @@ exports.getRunningSemesterByExamCommitteeChairmanService = async (profileId) => 
 
 exports.publishResultStateChangeSemesterService = async (semesterId) => {
     // console.log('semesterId ', semesterId);
-    const result = await Semester.updateOne({ _id: semesterId }, { $set: { isRunning: false, isResultPublished: true } })
+    const date = new Date();
+    const result = await Semester.updateOne({ _id: semesterId }, { $set: { isRunning: false, isResultPublished: true, resultPublishDate: date } })
     return result;
 }
 
