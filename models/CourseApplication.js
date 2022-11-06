@@ -61,21 +61,21 @@ const courseApplicationSchema = mongoose.Schema({
     },
     isChairmanVerified: {
         type: Boolean,
-        default: false
+
     },
     chairmanMessage: {
         type: String
     },
     isHallVerified: {
         type: Boolean,
-        default: false
+
     },
     hallMessage: {
         type: String
     },
     isAcademicCommitteeVerified: {
         type: Boolean,
-        default: false
+
     },
     academicCommitteeMessage: {
         type: String

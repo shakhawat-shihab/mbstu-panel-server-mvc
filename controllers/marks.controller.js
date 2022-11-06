@@ -2,7 +2,6 @@ const e = require("express");
 const { getCoursesMarksService, getMarksCourseTeacherService, updateMarksCourseTeacherService, getMarksService, getAllMarksOfStudentsOfACourseService, getTypeOfACourseService, updateMarksService, getTakenCoursesService, getMarksSecondExaminerService, getMarksThirdExaminerService, getTeachersForACourseService, turnInMarksCourseTeacherService, turnInMarksSecondExaminerService, turnInMarksThirdExaminerService, turnInMarksProjectTeacherService } = require("../services/marks.service");
 
 
-
 exports.getMarksCourseTeacher = async (req, res, next) => {
     try {
         const user = req.user;
