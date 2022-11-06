@@ -16,7 +16,7 @@ exports.getApplicationForADepartmentService = async (department) => {
 }
 
 exports.getApplicationForAHallService = async (hallId) => {
-    const result = await CourseApplication.find({ applicantHallId: hallId, isHallVerified: false, status: 'pending' })
+    const result = await CourseApplication.find({ isChairmanVerified: true, isHallVerified: false, applicantHallId: hallId, status: 'pending' })
         .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
         .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
         .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' });
@@ -24,7 +24,7 @@ exports.getApplicationForAHallService = async (hallId) => {
 }
 
 exports.getApplicationForAcademicService = async () => {
-    const result = await CourseApplication.find({ isAcademicCommitteeVerified: false, status: 'pending' })
+    const result = await CourseApplication.find({ isChairmanVerified: true, isHallVerified: true, isAcademicCommitteeVerified: false, status: 'pending' })
         .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
         .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
         .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' })

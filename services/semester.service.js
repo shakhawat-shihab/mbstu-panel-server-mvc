@@ -45,14 +45,14 @@ exports.getCoursesBySemesterIdService = async (semesterId) => {
 exports.getRunningSemesterByExamCommitteeService = async (profileId) => {
     // console.log('profileId ', profileId);
     // const result = await Semester.find({ examCommittee: { $eq: profileId } })
-    const result = await Semester.find({ $or: [{ examCommittee: { $eq: profileId } }, { examCommitteeChairman: { $eq: profileId } }] })
+    const result = await Semester.find({ $or: [{ examCommittee: { $eq: profileId } }, { examCommitteeChairman: { $eq: profileId } }], isResultPublished: false })
         .select('  name semesterCode department session degree examCommittee examCommitteeChairman ')
     return result;
 }
 
 exports.getRunningSemesterByExamCommitteeChairmanService = async (profileId) => {
     // console.log('profileId ', profileId);
-    const result = await Semester.find({ examCommitteeChairman: { $eq: profileId } })
+    const result = await Semester.find({ examCommitteeChairman: { $eq: profileId }, isResultPublished: false })
         .select('  name semesterCode department session degree examCommittee examCommitteeChairman ')
     return result;
 }
