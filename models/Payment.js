@@ -6,18 +6,25 @@ const paymentSchema = mongoose.Schema({
         type: ObjectId,
         ref: 'course-application'
     },
-    amount: {
+    customer_name: {
+        type: String
+    },
+    customer_email: {
+        type: String
+    },
+    total_amount: {
         type: Number
+    },
+    currency: {
+        type: String
+    },
+    tran_id: {
+        type: String
     },
     paymentTime: {
         type: Date
     },
-    last4: {
-        type: Number
-    },
-    transaction: {
-        type: String
-    }
+
 
 }, {
     timestamps: true
