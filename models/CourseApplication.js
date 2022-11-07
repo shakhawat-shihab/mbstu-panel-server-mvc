@@ -80,6 +80,14 @@ const courseApplicationSchema = mongoose.Schema({
     academicCommitteeMessage: {
         type: String
     },
+    isPaid: {
+        type: Boolean,
+    },
+    transactionId: {
+        type: String,
+        ref: 'payment'
+    },
+
 
 }, {
     timestamps: true

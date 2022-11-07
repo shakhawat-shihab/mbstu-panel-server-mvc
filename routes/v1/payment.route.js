@@ -2,22 +2,24 @@ const express = require("express");
 const paymentController = require("../../controllers/payment.controller");
 const verifyToken = require("../../middleware/verifyToken");
 const router = express.Router();
-const SSLCommerzPayment = require("sslcommerz");
 const { v4: uuidv4 } = require('uuid');
+const CourseApplication = require("../../models/CourseApplication");
+const Payment = require("../../models/Payment");
 
-// router.post('/create-payment-intent', verifyToken, paymentController?.paymentIntent);
-// router.post('/create-payment', verifyToken, paymentController?.createPayment);
+
 
 router.post('/ssl-init', paymentController?.initializeSSL);
 
 router.post("/success", async (req, res) => {
-    console.log(req.params.id);
-    console.log('trannnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn ================ ', req.body);
-    res.redirect(`http://localhost:3000/dashboard/course-registration-view/63621e5400ed809da0fbcd26`)
+    // console.log('trannnnn ==== ', req.body);
+    const update = await CourseApplication.updateOne({ transactionId: req?.body?.tran_id }, { $set: { isPaid: true } })
+    // console.log('update ', update)
+    const payment = await Payment.create(req.body)
+
+    res.redirect(`http://localhost:3000/dashboard/course-registration-view`)
     // res.status(400).json({
     //     message: "SSL successyyyyy"
     // })
-
 })
 router.post("/failure", async (req, res) => {
     // const result = await orderCollection.deleteOne({ tran_id: req.body.tran_id })
