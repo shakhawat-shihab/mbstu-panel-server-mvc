@@ -85,7 +85,6 @@ const userSchema = mongoose.Schema({
     },
     confirmationToken: String,
     confirmationTokenExpires: Date,
-
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,

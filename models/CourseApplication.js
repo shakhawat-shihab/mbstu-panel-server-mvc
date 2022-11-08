@@ -25,8 +25,9 @@ const courseApplicationSchema = mongoose.Schema({
         type: String,
     },
     applicantProfileId: {
-        type: ObjectId,
-        ref: 'profile'
+        // type: ObjectId,
+        // ref: 'profile'
+        type: String
     },
     applicantName: {
         type: String,
