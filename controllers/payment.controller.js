@@ -56,7 +56,7 @@ exports.initializeSSL = async (req, res) => {
         //https://developer.sslcommerz.com/doc/v4/#returned-parameters
         const info = { ...productInfo, ...data }
         console.log('info.GatewayPageURL ', info.GatewayPageURL);
-        // console.log('info.GatewayPageURL ', data);
+        console.log('info.GatewayPageURL ', data);
         if (info.GatewayPageURL) {
             // console.log('if part')
             res.json(info.GatewayPageURL)
