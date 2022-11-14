@@ -7,18 +7,22 @@ const { getStudentOfPreviousSemesterService } = require("../services/studentsRes
 
 exports.createSemester = async (req, res, next) => {
     try {
+        const date = new Date();
         const { courses, ...otherInfo } = req.body;
+        date.setDate(date.getDate() + 60);
+        otherInfo.registrationCloseDate = date;
+        // console.log(otherInfo);
 
-        // 1
-        // const findSemesterResult = await findSemesterService({ semesterCode: otherInfo.semesterCode, session: otherInfo.session })
+        //1
+        const findSemesterResult = await findSemesterService({ semesterCode: otherInfo.semesterCode, session: otherInfo.session })
 
         //2
-        // if (findSemesterResult) {
-        //     return res.status(400).json({
-        //         status: "fail",
-        //         message: `This semester is already created for session ${req?.body?.session}`,
-        //     });
-        // }
+        if (findSemesterResult) {
+            return res.status(400).json({
+                status: "fail",
+                message: `This semester is already created for session ${req?.body?.session}`,
+            });
+        }
 
         //3
         // create semester
@@ -231,8 +235,9 @@ exports.getCoursesPreviousRunningSemester = async (req, res, next) => {
     try {
         const { semesterCode } = req.params;
         const { user } = req;
+        const date = new Date();
         // console.log(semesterCode);
-        const result = await getCoursesPreviousRunningSemesterService(semesterCode, user?.department, user?.profileId);
+        const result = await getCoursesPreviousRunningSemesterService(semesterCode, user?.department, user?.profileId, date);
         return res.status(200).json({
             status: "success",
             message: "Successfully loaded student and their taken courses",
@@ -251,7 +256,9 @@ exports.getCoursesOfRunningSemesterBySemesterCode = async (req, res, next) => {
     try {
         const { semesterCode } = req.params;
         const { user } = req;
-        const courses = await getCoursesOfRunningSemesterBySemesterCodeService(semesterCode, user?.department);
+        const date = new Date();
+        console.log(semesterCode, date);
+        const courses = await getCoursesOfRunningSemesterBySemesterCodeService(semesterCode, user?.department, date);
         return res.status(200).json({
             status: "success",
             message: "Successfully loaded courses of a semester",

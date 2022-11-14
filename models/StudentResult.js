@@ -49,6 +49,18 @@ const studentResultSchema = mongoose.Schema({
         projectThirty: {
             type: Number
         },
+        projectTeacher: {
+            name: {
+                type: String
+            },
+            profileId: {
+                type: ObjectId,
+                ref: 'profile'
+            }
+        },
+        isBacklog: {
+            type: Boolean
+        }
 
     }],
     semesterCode: {

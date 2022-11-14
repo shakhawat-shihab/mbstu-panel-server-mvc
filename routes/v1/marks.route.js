@@ -19,6 +19,7 @@ router.put('/update-marks/third-examiner/:courseMarksId', verifyToken, authoriza
 router.put('/turn-in/course-teacher/:courseMarksId', verifyToken, authorization('teacher'), marksController.turnInMarksCourseTeacher);
 router.put('/turn-in/second-examiner/:courseMarksId', verifyToken, authorization('teacher'), marksController.turnInMarksSecondExaminer);
 router.put('/turn-in/third-examiner/:courseMarksId', verifyToken, authorization('teacher'), marksController.turnInMarksThirdExaminer);
+
 router.put('/turn-in/project-teacher/:courseMarksId', verifyToken, authorization('teacher'), marksController.turnInMarksProjectTeacher);
 
 

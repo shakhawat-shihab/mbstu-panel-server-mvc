@@ -55,8 +55,8 @@ exports.initializeSSL = async (req, res) => {
         //process the response that got from sslcommerz 
         //https://developer.sslcommerz.com/doc/v4/#returned-parameters
         const info = { ...productInfo, ...data }
-        console.log('info.GatewayPageURL ', info.GatewayPageURL);
-        console.log('info.GatewayPageURL ', data);
+        // console.log('info.GatewayPageURL ', info.GatewayPageURL);
+        // console.log('info.GatewayPageURL ', data);
         if (info.GatewayPageURL) {
             // console.log('if part')
             res.json(info.GatewayPageURL)
@@ -77,7 +77,7 @@ exports.successSSL = async (req, res) => {
     // console.log('update ', update)
     const payment = await Payment.create(req.body);
     const findApplicationWithTransactionId = await CourseApplication.findOne({ transactionId: req?.body?.tran_id })
-    console.log('findApplicationWithTransactionId ', findApplicationWithTransactionId)
+    // console.log('findApplicationWithTransactionId ', findApplicationWithTransactionId)
     res.redirect(`http://localhost:3000/dashboard/course-registration-view/${findApplicationWithTransactionId?._id}`)
     // res.status(400).json({
     //     message: "SSL success"

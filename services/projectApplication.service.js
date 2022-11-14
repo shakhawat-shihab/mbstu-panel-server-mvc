@@ -12,14 +12,18 @@ exports.getProjectCoursesService = async (studentProfileId, department) => {
     // console.log(studentProfileId, department);
     //get semester code
     const data = await getStudentResultService(studentProfileId);
-    console.log(data);
+    // console.log(data);
     // get courses of running semester
-    const result = await getCoursesOfRunningSemesterBySemesterCodeService(data?.semesterCode + 1, department);
+    const date = new Date();
+    const result = await getCoursesOfRunningSemesterBySemesterCodeService(data?.semesterCode + 1, department, date)
     const arrayOfProjectCourse = [];
     result?.coursesMarks?.map(x => {
         let found = false;
         if (x.type == 'project') {
             data?.coursesMarks.map(c => {
+                if (c.courseCode == x.courseCode) {
+                    console.log('found');
+                }
                 if (c.courseCode == x.courseCode && (c.projectSeventy + c.projectSeventy) < 40) {
                     found = true;
                     arrayOfProjectCourse.push(x)

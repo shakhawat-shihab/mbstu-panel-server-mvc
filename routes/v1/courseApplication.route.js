@@ -6,7 +6,7 @@ const verifyToken = require("../../middleware/verifyToken");
 const router = express.Router();
 
 router.post('/create', verifyToken, authorization('student'), courseApplicationController.createCourseApplication)
-router.get('/total-credit-taken', verifyToken, authorization('student'), courseApplicationController.getTotalCreditTaken)
+router.get('/total-credit-taken/:semesterCode', verifyToken, authorization('student'), courseApplicationController.getTotalCreditTaken)
 
 router.get('/get-my-applications', verifyToken, authorization('student'), courseApplicationController.getApplicationForAStudent)
 

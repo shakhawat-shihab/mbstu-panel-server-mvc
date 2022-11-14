@@ -25,12 +25,12 @@ exports.updateExamTakenService = async (id) => {
 }
 
 
-exports.getCoursesOfRunningSemesterBySemesterCodeService = async (semesterCode, dept) => {
+exports.getCoursesOfRunningSemesterBySemesterCodeService = async (semesterCode, dept, date) => {
     // isRunning: true    ==> isExamTaken:false
-    const courses = await Semester.findOne({ semesterCode: semesterCode, department: dept, isExamTaken: false })
+    const courses = await Semester.findOne({ semesterCode: semesterCode, department: dept, registrationCloseDate: { $gte: date }, isExamTaken: false })
         .select('coursesMarks name degree')
         .populate({ path: 'coursesMarks', select: 'courseCode courseTitle credit type teacher semesterId' })
-    // console.log(semester.courses)
+    // console.log(courses)
     return courses;
 }
 
@@ -60,15 +60,16 @@ exports.getRunningSemesterByExamCommitteeChairmanService = async (profileId) => 
 exports.publishResultStateChangeSemesterService = async (semesterId) => {
     // console.log('semesterId ', semesterId);
     const date = new Date();
-    const result = await Semester.updateOne({ _id: semesterId }, { $set: { isRunning: false, isResultPublished: true, resultPublishDate: date } })
+    const result = await Semester.updateOne({ _id: semesterId }, { $set: { isRunning: false, isExamTaken: true, isResultPublished: true, resultPublishDate: date } })
     return result;
 }
 
-exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept, profileId) => {
+
+exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept, profileId, date) => {
     semesterCode = parseInt(semesterCode);
     // console.log(semesterCode, dept);
     const result = await Semester.aggregate([
-        { $match: { "semesterCode": { $lte: semesterCode }, "department": dept, "isRunning": true } },
+        { $match: { "semesterCode": { $lte: semesterCode }, "registrationCloseDate": { $gte: date }, "department": dept, "isRunning": true } },
         { $lookup: { from: 'marks', localField: 'coursesMarks', foreignField: '_id', as: 'course' } },
         {
             $project: {
@@ -123,12 +124,10 @@ exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept, pr
 
 //need a lot of modification here
 exports.getMarksOfCurrentSemesterService = async (semesterId) => {
-
     // const result = await Semester.findOne({ _id: semesterId })
     //     .select('coursesMarks examCommittee examCommitteeChairman name degree department session ')
     //     .populate({ path: 'coursesMarks' })
     //     .populate('examCommitteeChairman')
-
 
     const semester = await Semester.findOne({ _id: semesterId })
         .populate('coursesMarks');
@@ -180,9 +179,11 @@ exports.getMarksOfCurrentSemesterService = async (semesterId) => {
                         labExperimentBy: "$studentsMarks.labExperimentBy",
                         projectClassPerformance: "$studentsMarks.projectClassPerformance",
                         projectClassPerformanceBy: "$studentsMarks.projectClassPerformanceBy",
+                        projectClassPerformanceByProfileId: "$studentsMarks.projectClassPerformanceByProfileId",
                         projectPresentation: "$studentsMarks.projectPresentation",
                         projectPresentationBy: "$studentsMarks.projectPresentationBy",
                         isPaid: "$studentsMarks.isPaid",
+                        isBacklog: "$studentsMarks.isBacklog",
                     }
                 }
             }

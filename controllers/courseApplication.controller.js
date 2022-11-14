@@ -23,7 +23,9 @@ exports.createCourseApplication = async (req, res, next) => {
 exports.getTotalCreditTaken = async (req, res, next) => {
     try {
         const { profileId } = req?.user;
-        const totalCredit = await getTotalCreditTakenService(profileId);
+        const { semesterCode } = req?.params;
+        console.log('getTotalCreditTaken ==> ', profileId, semesterCode)
+        const totalCredit = await getTotalCreditTakenService(profileId, semesterCode);
         res.status(200).json({
             status: "success",
             message: "loaded successfully!",

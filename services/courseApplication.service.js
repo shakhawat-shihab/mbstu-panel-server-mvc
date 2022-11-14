@@ -25,7 +25,7 @@ exports.getApplicationForAHallService = async (hallId) => {
 }
 
 exports.getApplicationForAcademicService = async () => {
-    const result = await CourseApplication.find({ isChairmanVerified: true, isHallVerified: true, isAcademicCommitteeVerified: { $exists: false }, status: 'pending' })
+    const result = await CourseApplication.find({ isChairmanVerified: true, isHallVerified: true, isPaid: true, isAcademicCommitteeVerified: { $exists: false }, status: 'pending' })
         .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
         .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
         .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' })
@@ -49,13 +49,14 @@ exports.getApplicationForAStudentService = async (profileId) => {
 }
 
 
-exports.getTotalCreditTakenService = async (id) => {
-    const result = await CourseApplication.find({ applicantProfileId: id, status: 'pending' })
+exports.getTotalCreditTakenService = async (id, semesterCode) => {
+    const result = await CourseApplication.find({ applicantProfileId: id, semesterCode: semesterCode, $or: [{ status: { $eq: 'pending' } }, { status: { $eq: 'successfull' } }] })
         .select('name applicantId applicantName regularCourses backlogCourses specialCourses ')
         .populate({ path: 'regularCourses', select: 'credit courseCode' })
         .populate({ path: 'backlogCourses', select: 'credit courseCode' })
         .populate({ path: 'specialCourses', select: 'credit courseCode' })
 
+    console.log('result ', result)
     let totalCreditTaken = 0;
     let foundRegularCourse = false;
     result.map(application => {

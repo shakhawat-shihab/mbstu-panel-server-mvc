@@ -95,10 +95,16 @@ exports.updateMarksFromSemesterUpdate = async (id, info) => {
     return result;
 }
 
-exports.turnInMarksCourseTeacherService = async (courseId) => {
+exports.turnInMarksCourseTeacherService = async (courseId, type, profileId) => {
     // console.log(id, info)
-    const result = await Marks.updateOne({ _id: courseId }, { $set: { isSubmittedByCourseTeacher: true } });
-    return result;
+    if (type == 'project') {
+        const result = await Marks.updateOne({ _id: courseId }, { $addToSet: { isSubmittedByProjectTeacher: profileId } });
+        return result;
+    }
+    else {
+        const result = await Marks.updateOne({ _id: courseId }, { $set: { isSubmittedByCourseTeacher: true } });
+        return result;
+    }
 }
 
 exports.turnInMarksSecondExaminerService = async (courseId) => {
@@ -109,7 +115,7 @@ exports.turnInMarksSecondExaminerService = async (courseId) => {
 
 exports.turnInMarksThirdExaminerService = async (courseId) => {
     // console.log(id, info)
-    const result = await Marks.updateOne({ _id: courseId }, { $set: { isSubmittedByThirdExamier: true } });
+    const result = await Marks.updateOne({ _id: courseId }, { $set: { isSubmittedByThirdExaminer: true } });
     return result;
 }
 

@@ -138,7 +138,7 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
             });
         }
 
-        const validProperty = ['theoryAttendance', 'theoryCT1', 'theoryCT2', 'theoryCT3', 'theoryFinal', 'labAttendance', 'labReport', 'labQuiz', 'projectClassPerformance'];
+        const validProperty = ['theoryAttendance', 'theoryCT1', 'theoryCT2', 'theoryCT3', 'theoryFinal', 'labAttendance', 'labReport', 'labQuiz', 'projectClassPerformance', 'projectClassPerformanceBy', 'projectClassPerformanceByProfileId'];
         if (!validProperty.includes(propertyName)) {
             return res.status(400).json({
                 status: "fail",
@@ -181,6 +181,15 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
             // else {
             //     student[`${propertyName}`] = 0
             // }
+
+            // add extra data if project course
+            if (allmarksOfACourse?.type == 'project') {
+                // console.log('allmarksOfACourse?.type == ', allmarksOfACourse?.type)
+                // console.log('inputObject?.[${projectClassPerformanceBy}] == ', inputObject?.[`projectClassPerformanceBy`])
+                student[`projectClassPerformanceBy`] = inputObject?.[`projectClassPerformanceBy`]
+                student[`projectClassPerformanceByProfileId`] = inputObject?.[`projectClassPerformanceByProfileId`]
+            }
+
             return student;
         })
         // console.log(updatedData)
@@ -327,19 +336,31 @@ exports.turnInMarksCourseTeacher = async (req, res, next) => {
         const type = await getTypeOfACourseService(req.params.courseMarksId);
         const marksOfACourse = await getMarksCourseTeacherService(courseMarksId, type?.type);
 
+        //check if teacher for this course
         if ((user.profileId != marksOfACourse?.teacher?.[`teacherProfileId`]) && !marksOfACourse?.teacherList?.includes(user.profileId)) {
             return res.status(403).json({
                 status: "fail",
                 message: "Access denied",
             });
         }
+
+        //check for theory and lab
         if (marksOfACourse?.isSubmittedByCourseTeacher) {
             return res.status(403).json({
                 status: "fail",
                 message: "You have already submitted all the marks!",
             });
         }
-        const result = turnInMarksCourseTeacherService(courseMarksId)
+
+        //check for project
+        if (type.type == 'project' && marksOfACourse?.isSubmittedByProjectTeacher?.includes(user?.profileId)) {
+            return res.status(403).json({
+                status: "fail",
+                message: "You have already submitted all the marks!",
+            });
+        }
+
+        const result = turnInMarksCourseTeacherService(courseMarksId, type?.type, user?.profileId)
 
         res.status(200).json({
             status: "success",

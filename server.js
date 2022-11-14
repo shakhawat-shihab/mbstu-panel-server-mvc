@@ -3,7 +3,7 @@ const dotenv = require("dotenv").config();
 
 
 // const connectionString = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zwiso.mongodb.net/job-portal?retryWrites=true&w=majority`;
-const connectionString = process.env.DATABASE_LOCAL;
+const connectionString = process.env.DATABASE_LOCAL_1;
 
 
 // database connection

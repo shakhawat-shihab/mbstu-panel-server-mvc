@@ -171,6 +171,7 @@ exports.updateProposalToApprove = async (req, res, next) => {
             if (x?.teacherProfileId == profileId) {
                 found = true;
                 x.students.push(studentProfileId)
+                // console.log('found ', profileId);
                 array.push(x)
             }
             else {
@@ -185,6 +186,9 @@ exports.updateProposalToApprove = async (req, res, next) => {
             obj.students = [studentProfileId]
             array.push(obj)
         }
+
+
+
 
         //now array consists of all teacherStudentMap information
         marks.setTeacherStudentMap(array);

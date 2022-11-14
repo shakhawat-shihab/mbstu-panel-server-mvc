@@ -141,6 +141,9 @@ const marksSchema = mongoose.Schema({
         projectClassPerformanceBy: {
             type: String,
         },
+        projectClassPerformanceByProfileId: {
+            type: ObjectId,
+        },
         projectPresentation: {
             type: Number,
             max: 30
@@ -163,7 +166,7 @@ const marksSchema = mongoose.Schema({
     isSubmittedBySecondExaminer: {
         type: Boolean,
     },
-    isSubmittedByThirdExamier: {
+    isSubmittedByThirdExaminer: {
         type: Boolean,
     },
     isSubmittedByProjectTeacher: [{
