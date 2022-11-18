@@ -64,6 +64,10 @@ const projectApplicationSchema = mongoose.Schema({
         enum: ['pending', 'accepted', 'denied', 'discontinued'],
         default: 'pending'
     },
+    isBacklog: {
+        type: Boolean,
+        default: false
+    }
 
 }, {
     timestamps: true

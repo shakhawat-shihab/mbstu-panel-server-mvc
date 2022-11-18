@@ -1,6 +1,6 @@
 const Marks = require("../models/Marks");
 const ProjectApplication = require("../models/ProjectApplication");
-const { getCoursesOfRunningSemesterBySemesterCodeService } = require("./semester.service");
+const { getCoursesOfRunningSemesterBySemesterCodeService, getCoursesPreviousRunningSemesterService } = require("./semester.service");
 const { getStudentSemesterCodeService, getStudentResultService } = require("./studentsResult.service");
 
 exports.createProjectApplicationService = async (data) => {
@@ -15,28 +15,45 @@ exports.getProjectCoursesService = async (studentProfileId, department) => {
     // console.log(data);
     // get courses of running semester
     const date = new Date();
-    const result = await getCoursesOfRunningSemesterBySemesterCodeService(data?.semesterCode + 1, department, date)
+    const result = await getCoursesPreviousRunningSemesterService(data?.semesterCode, department, studentProfileId, date)
+    // console.log(result);
     const arrayOfProjectCourse = [];
-    result?.coursesMarks?.map(x => {
-        let found = false;
+    result?.map(x => {
         if (x.type == 'project') {
-            data?.coursesMarks.map(c => {
-                if (c.courseCode == x.courseCode) {
-                    console.log('found');
-                }
-                if (c.courseCode == x.courseCode && (c.projectSeventy + c.projectSeventy) < 40) {
-                    found = true;
-                    arrayOfProjectCourse.push(x)
-                }
-            })
-            if (found == false) {
-                arrayOfProjectCourse.push(x)
-            }
+            arrayOfProjectCourse.push(x);
         }
     })
+
+    // arrayOfBacklogProjectCourse refers to the course info that is backlogged
+    const arrayOfBacklogProjectCourse = [];
+    data?.coursesMarks?.map(x => {
+        if (x.type == 'project' && (x.projectSeventy + x.projectThirty) < 40) {
+            arrayOfBacklogProjectCourse.push(x);
+        }
+    })
+    // console.log(arrayOfBacklogProjectCourse)
+
+
+    // result?.coursesMarks?.map(x => {
+    //     let found = false;
+    //     if (x.type == 'project') {
+    //         data?.coursesMarks.map(c => {
+    //             if (c.courseCode == x.courseCode) {
+    //                 console.log('found');
+    //             }
+    //             if (c.courseCode == x.courseCode && (c.projectSeventy + c.projectSeventy) < 40) {
+    //                 found = true;
+    //                 arrayOfProjectCourse.push(x)
+    //             }
+    //         })
+    //         if (found == false) {
+    //             arrayOfProjectCourse.push(x)
+    //         }
+    //     }
+    // })
     // console.log(result);
     // console.log(arrayOfProjectCourse);
-    return arrayOfProjectCourse;
+    return { arrayOfProjectCourse, arrayOfBacklogProjectCourse };
 }
 
 exports.getMyProposalForACourseService = async (profileId, courseId) => {

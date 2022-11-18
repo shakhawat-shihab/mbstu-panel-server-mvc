@@ -133,9 +133,8 @@ exports.updateProposalToApprove = async (req, res, next) => {
     try {
         const { profileId } = req.user;
         const { proposalId } = req.params;
-
         //load the proposal, so that we can get courseId & studentProfileId from the proposal
-        const application = await getProposalDetailsService(proposalId)
+        const application = await getProposalDetailsService(proposalId);
         if (!application) {
             return res.status(400).json({
                 status: "fail",
@@ -149,7 +148,10 @@ exports.updateProposalToApprove = async (req, res, next) => {
             });
         }
 
+
+
         const studentProfileId = application?.applicantProfileId;
+        const id = application?.applicantId;
         const courseId = application?.courseMarksId;
         // console.log(application);
         // console.log(studentProfileId, courseId);
@@ -187,8 +189,13 @@ exports.updateProposalToApprove = async (req, res, next) => {
             array.push(obj)
         }
 
-
-
+        if (application?.isBacklog) {
+            const obj = {}
+            obj.studentProfileId = studentProfileId;
+            obj.id = id;
+            obj.isBacklog = true;
+            marks.setStudent(obj)
+        }
 
         //now array consists of all teacherStudentMap information
         marks.setTeacherStudentMap(array);
