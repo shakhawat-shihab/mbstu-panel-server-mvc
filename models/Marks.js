@@ -134,6 +134,13 @@ const marksSchema = mongoose.Schema({
         labExperimentBy: {
             type: String,
         },
+        labViva: {
+            type: Number,
+            max: 10
+        },
+        labVivaBy: {
+            type: String,
+        },
         projectClassPerformance: {
             type: Number,
             max: 70

@@ -486,7 +486,9 @@ exports.updateMarksExamCommittee = async (req, res, next) => {
         const user = req.user;
         const { courseMarksId } = req.params;
         const { propertyName } = req.body;
-        const validProperty = ['labExperiment', 'projectPresentation'];
+        // console.log('propertyName ', propertyName);
+        // console.log('req.body ', req.body);
+        const validProperty = ['labExperiment', 'labViva', 'projectPresentation'];
         if (!validProperty.includes(propertyName)) {
             return res.status(400).json({
                 status: "fail",
@@ -527,7 +529,7 @@ exports.updateMarksExamCommittee = async (req, res, next) => {
             const inputObject = req.body.marks.find(x => {
                 return x.id == student.id
             })
-            // console.log('inputObject == ', inputObject)
+            console.log('inputObject == ', inputObject)
             if (inputObject?.[`${propertyName}`]) {
                 student[`${propertyName}`] = inputObject?.[`${propertyName}`];
                 student[`${propertyName}By`] = user?.fullName;
