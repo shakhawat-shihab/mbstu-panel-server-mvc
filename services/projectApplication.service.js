@@ -27,7 +27,7 @@ exports.getProjectCoursesService = async (studentProfileId, department) => {
     // arrayOfBacklogProjectCourse refers to the course info that is backlogged
     const arrayOfBacklogProjectCourse = [];
     data?.coursesMarks?.map(x => {
-        if (x.type == 'project' && (x.projectSeventy + x.projectThirty) < 40) {
+        if (x.type == 'project' && (x.projectClass + x.projectExam) < 40) {
             arrayOfBacklogProjectCourse.push(x);
         }
     })
@@ -41,7 +41,7 @@ exports.getProjectCoursesService = async (studentProfileId, department) => {
     //             if (c.courseCode == x.courseCode) {
     //                 console.log('found');
     //             }
-    //             if (c.courseCode == x.courseCode && (c.projectSeventy + c.projectSeventy) < 40) {
+    //             if (c.courseCode == x.courseCode && (c.projectClass + c.projectClass) < 40) {
     //                 found = true;
     //                 arrayOfProjectCourse.push(x)
     //             }

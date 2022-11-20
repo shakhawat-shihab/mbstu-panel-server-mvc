@@ -79,7 +79,7 @@ exports.getMarksThirdExaminerService = async (_id) => {
         let first = 0
         x?.theoryFinal && (first = parseInt(x.theoryFinal))
         x?.theorySecondExaminer && (second = parseInt(x.theorySecondExaminer))
-        if (Math.abs(first - second) > 15) {
+        if (Math.abs(first - second) > 14) {
             // console.log('x ================== ', x);
             let { theorySecondExaminer, theoryFinal, studentProfileId, theoryThirdExaminer, isPaid, id } = x;
             const obj = { id, studentProfileId, isPaid, theoryThirdExaminer }

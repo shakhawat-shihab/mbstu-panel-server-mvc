@@ -300,7 +300,7 @@ exports.updateMarksThirdExaminer = async (req, res, next) => {
                     student?.theoryFinal && (first = parseInt(student.theoryFinal))
                     student?.theorySecondExaminer && (second = parseInt(student.theorySecondExaminer))
                     // console.log(student.id, '  first === ', first, ' second === ', second)
-                    if (Math.abs(first - second) > 15) {
+                    if (Math.abs(first - second) > 14) {
                         return x
                     }
                 }

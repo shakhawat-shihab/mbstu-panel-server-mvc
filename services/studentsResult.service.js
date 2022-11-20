@@ -102,11 +102,11 @@ exports.publishResultService = async (data) => {
                         array.push(nw);
                     }
                     else if (x.type == 'lab') {
-                        !nw.labSixty && (nw.labSixty = x?.labSixty);
+                        !nw.labClass && (nw.labClass = x?.labClass);
                         array.push(nw);
                     }
                     else if (x.type == 'project') {
-                        !nw.projectSeventy && (nw.projectSeventy = x?.projectSeventy);
+                        !nw.projectClass && (nw.projectClass = x?.projectClass);
                         array.push(nw);
                     }
                     delete data?.students?.[`${stu?.id}`]?.[`${x?.courseCode}`];

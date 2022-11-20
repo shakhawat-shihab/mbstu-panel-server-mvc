@@ -37,16 +37,16 @@ const studentResultSchema = mongoose.Schema({
         theoryThirty: {
             type: Number
         },
-        labSixty: {
+        labClass: {
             type: Number
         },
-        labFourty: {
+        labExam: {
             type: Number
         },
-        projectSeventy: {
+        projectClass: {
             type: Number
         },
-        projectThirty: {
+        projectExam: {
             type: Number
         },
         projectTeacher: {

@@ -104,11 +104,11 @@ exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept, pr
                 if (c.type == 'theory' && (c.theorySeventy + c.theoryThirty) < 40) {
                     arr.push(x.course)
                 }
-                else if (c.type == 'lab' && (c.labSixty + c.labFourty) < 40) {
-                    console.log(c.labSixty + c.labFourty)
+                else if (c.type == 'lab' && (c.labClass + c.labExam) < 40) {
+                    console.log(c.labClass + c.labExam)
                     arr.push(x.course)
                 }
-                else if (c.type == 'project' && (c.projectSeventy + c.projectThirty) < 40) {
+                else if (c.type == 'project' && (c.projectClass + c.projectExam) < 40) {
                     arr.push(x.course)
                 }
                 return;
