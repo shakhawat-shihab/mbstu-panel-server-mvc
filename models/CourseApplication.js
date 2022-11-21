@@ -85,9 +85,13 @@ const courseApplicationSchema = mongoose.Schema({
     isPaid: {
         type: Boolean,
     },
-    transactionId: {
-        type: String,
+    paymentId: {
+        type: ObjectId,
         ref: 'payment'
+    },
+    tran_id: {
+        type: String,
+        // unique: true
     },
 
 

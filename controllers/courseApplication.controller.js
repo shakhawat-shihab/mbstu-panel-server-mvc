@@ -44,19 +44,36 @@ exports.getApplicationDetails = async (req, res, next) => {
     try {
         const user = req.user;
         const { applicationId } = req.params;
-        const application = await getApplicationDetailsService(applicationId);
-        // console.log(user?.profileId, application?.applicantProfileId)
+        const application = await getApplicationDetailsService(applicationId)
+
+        // console.log('req.user ', req.user)
+        console.log(user?.profileId, application?.applicantProfileId)
         if (user?.profileId != application?.applicantProfileId && !user?.isHallProvost && !user?.isAcademicCommittee && !user?.isDeptChairman) {
             return res.status(400).json({
                 status: "fail",
                 message: "You are not authorized to view it",
             });
         }
-        res.status(200).json({
-            status: "success",
-            message: "Application details loaded successfully!",
-            data: application,
-        });
+
+
+        if (user?.profileId == application?.applicantProfileId || user?.isAcademicCommittee) {
+            res.status(200).json({
+                status: "success",
+                message: "Application details loaded successfully with payment info!",
+                data: application,
+            });
+        }
+        else {
+            application.paymentId = {};
+            application.tran_id = '';
+            res.status(200).json({
+                status: "success",
+                message: "Application details loaded successfully!",
+                data: application,
+            });
+        }
+
+
     } catch (error) {
         res.status(400).json({
             status: "fail",

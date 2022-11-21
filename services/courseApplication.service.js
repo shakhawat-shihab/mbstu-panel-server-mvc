@@ -37,6 +37,7 @@ exports.getApplicationDetailsService = async (applicationId) => {
         .populate({ path: 'regularCourses', select: 'credit courseCode courseTitle  ' })
         .populate({ path: 'backlogCourses', select: 'credit courseCode courseTitle ' })
         .populate({ path: 'specialCourses', select: 'credit courseCode courseTitle ' })
+        .populate('paymentId');
     return result;
 }
 
@@ -56,7 +57,7 @@ exports.getTotalCreditTakenService = async (id, semesterCode) => {
         .populate({ path: 'backlogCourses', select: 'credit courseCode' })
         .populate({ path: 'specialCourses', select: 'credit courseCode' })
 
-    console.log('result ', result)
+    // console.log('result ', result)
     let totalCreditTaken = 0;
     let foundRegularCourse = false;
     result.map(application => {

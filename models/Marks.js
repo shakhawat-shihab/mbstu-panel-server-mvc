@@ -117,15 +117,15 @@ const marksSchema = mongoose.Schema({
         },
         labAttendance: {
             type: Number,
-            max: 15
+            max: 10
         },
         labReport: {
             type: Number,
-            max: 15
+            max: 20
         },
         labQuiz: {
             type: Number,
-            max: 30
+            max: 20
         },
         labExperiment: {
             type: Number,

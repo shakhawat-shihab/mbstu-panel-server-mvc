@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema.Types;
 const paymentSchema = mongoose.Schema({
     tran_id: {
         type: String,
-
+        unique: true
     },
     amount: Number,
     card_type: String,

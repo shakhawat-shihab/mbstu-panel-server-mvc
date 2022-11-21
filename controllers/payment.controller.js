@@ -13,12 +13,12 @@ exports.initializeSSL = async (req, res) => {
     const specialCoursesRate = 500;
     const marksheetFee = 100;
     const amount = numberOfRegularCourses * regularCoursesRate + numberOfBacklogCourses * backlogCoursesRate + numberOfSpecialCourses * specialCoursesRate + marksheetFee;
-    const transactionId = uuidv4();
+    const tran_id = uuidv4();
 
     const productInfo = {
         total_amount: amount,
         currency: 'BDT',
-        tran_id: transactionId, // use unique tran_id for each api call
+        tran_id: tran_id, // use unique tran_id for each api call
         success_url: 'http://localhost:5000/api/v1/payment/success',
         fail_url: 'http://localhost:5000/api/v1/payment/fail',
         cancel_url: 'http://localhost:5000/api/v1/payment/cancel',
@@ -47,7 +47,7 @@ exports.initializeSSL = async (req, res) => {
     };
 
     // save transaction id to the application
-    const trans = await CourseApplication.updateOne({ _id: req?.body?.applicationId }, { $set: { transactionId: transactionId } })
+    const trans = await CourseApplication.updateOne({ _id: req?.body?.applicationId }, { $set: { tran_id: tran_id } })
     // console.log(trans);
 
     const sslcommer = new SSLCommerzPayment(store_id, store_passwd, false) //true for live default false for sandbox
@@ -72,13 +72,15 @@ exports.initializeSSL = async (req, res) => {
 
 
 exports.successSSL = async (req, res) => {
-    // console.log('trannnnn ==== ', req.body);
-    const update = await CourseApplication.updateOne({ transactionId: req?.body?.tran_id }, { $set: { isPaid: true } })
+    console.log('trannnnn ==== ', req.body);
     // console.log('update ', update)
     const payment = await Payment.create(req.body);
-    const findApplicationWithTransactionId = await CourseApplication.findOne({ transactionId: req?.body?.tran_id })
-    // console.log('findApplicationWithTransactionId ', findApplicationWithTransactionId)
-    res.redirect(`http://localhost:3000/dashboard/course-registration-view/${findApplicationWithTransactionId?._id}`)
+
+    const update = await CourseApplication.updateOne({ tran_id: req?.body?.tran_id }, { $set: { isPaid: true, paymentId: payment?._id } })
+
+    const findApplicationWithtran_id = await CourseApplication.findOne({ paymentId: payment?._id })
+    console.log('findApplicationWithtran_id ', findApplicationWithtran_id)
+    res.redirect(`http://localhost:3000/dashboard/course-registration-view/${findApplicationWithtran_id?._id}`)
     // res.status(400).json({
     //     message: "SSL success"
     // })

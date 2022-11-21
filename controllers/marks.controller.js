@@ -529,7 +529,7 @@ exports.updateMarksExamCommittee = async (req, res, next) => {
             const inputObject = req.body.marks.find(x => {
                 return x.id == student.id
             })
-            console.log('inputObject == ', inputObject)
+            // console.log('inputObject == ', inputObject)
             if (inputObject?.[`${propertyName}`]) {
                 student[`${propertyName}`] = inputObject?.[`${propertyName}`];
                 student[`${propertyName}By`] = user?.fullName;

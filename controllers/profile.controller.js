@@ -4,7 +4,7 @@ const cloudinary = require("../utils/cloudinary");
 exports.profileUpdate = async (req, res, next) => {
     try {
         // console.log('user ', req.user)
-        console.log(' req.body ', req.body)
+        // console.log(' req.body ', req.body)
         const user = req.user;
         const data = req.body;
 
