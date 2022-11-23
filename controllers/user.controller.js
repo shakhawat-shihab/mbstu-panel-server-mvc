@@ -1,4 +1,4 @@
-const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService, addAcademicCommitteeService } = require("../services/user.service");
+const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService, addAcademicCommitteeService, getDeptChairmanService, removeAcademicCommitteeService } = require("../services/user.service");
 const User = require("../models/User");
 const { generateToken } = require("../utils/token");
 const { sendMailWithGmail } = require("../utils/email");
@@ -289,28 +289,76 @@ exports.addTeacher = async (req, res, next) => {
 
 exports.addAcademicCommittee = async (req, res, next) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
         const result = await addAcademicCommitteeService(userId);
 
         res.status(200).json({
             status: "success",
-            message: "Successfully added academic committee member",
+            message: "Successfully added to academic committee",
         });
 
     } catch (error) {
 
         res.status(400).json({
             status: "fail",
-            message: "Failed to add academic committee member",
+            message: "Failed to add in academic committee",
             error: error.message,
         });
     }
 }
 
+exports.removeAcademicCommittee = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const result = await removeAcademicCommitteeService(userId);
+
+        res.status(200).json({
+            status: "success",
+            message: "Successfully removed from academic committee",
+        });
+
+    } catch (error) {
+
+        res.status(400).json({
+            status: "fail",
+            message: "Failed removed from academic committee",
+            error: error.message,
+        });
+    }
+}
+
+exports.getDeptChairman = async (req, res, next) => {
+    try {
+        const { department } = req.params;
+        // console.log(department);
+        const result = await getDeptChairmanService(department);
+        if (result) {
+            return res.status(200).json({
+                status: "success",
+                message: "Successfully loaded current chairman",
+                data: result
+            });
+        }
+        res.status(404).json({
+            status: "fail",
+            message: "There is no chairman with this email for this department",
+            data: {}
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load chairman",
+            error: error.message,
+        });
+    }
+}
+
+
 exports.addDeptChairman = async (req, res, next) => {
     try {
         const { userId } = req.params;
-        const { department } = req.user;
+        const { department } = req.params;
         const result = await addDeptChairmanService(userId, department);
         if (result?.modifiedCount) {
             return res.status(200).json({

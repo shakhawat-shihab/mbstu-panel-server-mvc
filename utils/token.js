@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 exports.generateToken = (userInfo) => {
-    console.log(userInfo);
+    console.log('userInfo  ', userInfo);
+    console.log('userInfo?.isSuperAdmin  ', userInfo?.isTeacher);
     const payload = {
         id: userInfo?._id,
         profileId: userInfo?.profile[`_id`],
@@ -16,7 +17,9 @@ exports.generateToken = (userInfo) => {
         isDeptChairman: userInfo?.isDeptChairman,
         isHallProvost: userInfo?.isHallProvost,
         isAcademicCommittee: userInfo?.isAcademicCommittee,
+        isSuperAdmin: userInfo?.isSuperAdmin,
     }
+    console.log('payload =>>>>>> ', payload)
     // console.log('TOKEN_SECRET ', process.env.TOKEN_SECRET);
     // crypto.randomBytes(64).toString('hex')  => process.env.TOKEN_SECRET
     const token = jwt.sign(payload, process.env.TOKEN_SECRET, {

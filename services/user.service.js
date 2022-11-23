@@ -26,10 +26,12 @@ exports.findUserByEmailExceptPasswordService = async (email) => {
     return user;
 }
 exports.findUserLikeEmailExceptPasswordService = async (email) => {
-    let regExp = new RegExp(email);
-    const user = await User.find({ "email": regExp })
+    // let regExp = new RegExp(email);
+    // let regExp = new RegExp(`\\b${email}\\b`, 'gi');
+    const user = await User.find({ "email": { $regex: email } })
         .select('-password')
-        .populate('profile');
+        .populate('profile')
+        .limit(10)
     return user;
 }
 
@@ -42,13 +44,26 @@ exports.addTeacherService = async (_id, department) => {
     return result;
 }
 
+
+exports.getDeptChairmanService = async (department) => {
+    const result = await User.findOne({ department: department, isDeptChairman: true })
+        .select('-password')
+        .populate('profile');
+    return result;
+}
+
 exports.addDeptChairmanService = async (_id, department) => {
+    const currentChairman = await User.updateOne({ isDeptChairman: true, department: department }, { $set: { isDeptChairman: false } });
     const result = await User.updateOne({ _id }, { $set: { isDeptChairman: true, department: department } })
     return result;
 }
 
 exports.addAcademicCommitteeService = async (_id) => {
     const result = await User.updateOne({ _id }, { $set: { isAcademicCommittee: true } })
+    return result;
+}
+exports.removeAcademicCommitteeService = async (_id) => {
+    const result = await User.updateOne({ _id }, { $set: { isAcademicCommittee: false } })
     return result;
 }
 

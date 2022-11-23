@@ -65,6 +65,9 @@ const userSchema = mongoose.Schema({
     isAcademicCommittee: {
         type: Boolean,
     },
+    isSuperAdmin: {
+        type: Boolean,
+    },
     status: {
         type: String,
         enum: ['active', 'inactive', 'blocked'],
