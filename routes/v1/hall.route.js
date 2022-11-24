@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post('/create', hallController.createHall);
 router.get('/find/:id', hallController.findStudentInhall);
+router.get('/get-halls', hallController.getHalls);
 
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService, addAcademicCommitteeService, getDeptChairmanService, removeAcademicCommitteeService } = require("../services/user.service");
+const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService, addAcademicCommitteeService, getDeptChairmanService, removeAcademicCommitteeService, removeTeacherService } = require("../services/user.service");
 const User = require("../models/User");
 const { generateToken } = require("../utils/token");
 const { sendMailWithGmail } = require("../utils/email");
@@ -266,7 +266,16 @@ exports.addTeacher = async (req, res, next) => {
     try {
         const { userId } = req.params;
         const { department } = req.user;
+        const user = await User.findOne({ _id: userId });
+
+        if (user.department != department && user?.department) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not authorized to modify whom are not in your department",
+            });
+        }
         const result = await addTeacherService(userId, department);
+
         if (result?.modifiedCount) {
             return res.status(200).json({
                 status: "success",
@@ -282,6 +291,41 @@ exports.addTeacher = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Failed to add Teacher",
+            error: error.message,
+        });
+    }
+}
+
+
+exports.removeTeacher = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const { department } = req.user;
+        const user = await User.findOne({ _id: userId });
+        // console.log(userId, user, department)
+        if (user.department != department && user?.department) {
+            return res.status(400).json({
+                status: "fail",
+                message: "You are not authorized to modify whom are not in your department",
+            });
+        }
+        const result = await removeTeacherService(userId, department);
+
+        if (result?.modifiedCount) {
+            return res.status(200).json({
+                status: "success",
+                message: "Successfully removed teacher",
+            });
+        }
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to remove Teacher",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to remove Teacher",
             error: error.message,
         });
     }
@@ -341,7 +385,7 @@ exports.getDeptChairman = async (req, res, next) => {
         }
         res.status(404).json({
             status: "fail",
-            message: "There is no chairman with this email for this department",
+            message: "There is no chairman for this department",
             data: {}
         });
 
@@ -405,31 +449,87 @@ exports.getTeacherByDept = async (req, res, next) => {
 }
 
 
-exports.addHallProvost = async (req, res, next) => {
+exports.getHallProvost = async (req, res, next) => {
     try {
-        const { hallId, hallProvostProfileId, hallProvostName, hallName } = req.body;
-        const { department } = req.user;
+        const { hallCode } = req.params;
+        // console.log(hallCode)
 
         //get hall data
-        const hall = await Hall.findOne({ _id: hallId });
+        const hallDetails = await Hall.findOne({ codeName: hallCode });
+        // console.log(hallDetails)
 
-        //get current hall Provost
-        const currentHallProvost = hall.hallProvost;
-        console.log('currentHallProvost ', currentHallProvost)
+        const result = await User.findOne({ _id: hallDetails?.hallProvost?.userId })
+            .select('-password')
+            .populate('profile')
 
-        //update user ====>> remove the hall info from current hall provost user info
-        const o = await User.updateOne({ profile: currentHallProvost?.profileId }, { $set: { hall: {}, isHallProvost: false } })
-        console.log(o)
+        if (result) {
+            return res.status(200).json({
+                status: "success",
+                message: "Successfully loaded hall provost",
+                data: result
+            });
+        }
+        res.status(404).json({
+            status: "fail",
+            message: "There is no hall provost for this department",
+            data: {}
+        });
 
-        //set new hall provost
-        hall.setHallProvost({ name: hallProvostName, profileId: hallProvostProfileId });
-        const result = await hall.save()
-        // console.log(result)
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to load Hall Provost",
+            error: error.message,
+        });
+    }
+}
 
 
-        ////add the hall info to current hall provost user info
-        const output = await User.updateOne({ profile: hallProvostProfileId }, { $set: { hall: { name: hallName, hallId: hallId }, isHallProvost: true } })
-        console.log(output)
+exports.addHallProvost = async (req, res, next) => {
+    try {
+
+        const { hallCode, userId } = req.params;
+
+        //1
+        //get hall data
+        const hallDetails = await Hall.findOne({ codeName: hallCode });
+        // console.log(hallDetails)
+
+        //2
+        //erase hall info from current provost (if exist)
+        if (hallDetails?.hallProvost?.userId) {
+            await User.updateOne({ _id: hallDetails?.hallProvost?.userId }, { $set: { hall: {}, isHallProvost: false } })
+        }
+
+        //3
+        //add hall info to new provost
+        await User.updateOne({ _id: userId }, { $set: { hall: { name: hallDetails?.name, hallId: hallDetails?._id }, isHallProvost: true } })
+
+
+        //4
+        // update the provost info in the hall
+        const user = await User.findOne({ _id: userId }).populate('profile');
+        const result = await Hall.updateOne({ _id: hallDetails?._id }, { $set: { hallProvost: { name: user?.profile?.firstName + ' ' + user?.profile?.lastName, userId: userId } } })
+
+
+
+        // //get current hall Provost
+        // const currentHallProvost = hall.hallProvost;
+        // console.log('currentHallProvost ', currentHallProvost)
+
+        // //update user ====>> remove the hall info from current hall provost user info
+        // const o = await User.updateOne({ profile: currentHallProvost?.profileId }, { $set: { hall: {}, isHallProvost: false } })
+        // console.log(o)
+
+        // //set new hall provost
+        // hall.setHallProvost({ name: hallProvostName, profileId: hallProvostProfileId });
+        // const result = await hall.save()
+        // // console.log(result)
+
+
+        // ////add the hall info to current hall provost user info
+        // const output = await User.updateOne({ profile: hallProvostProfileId }, { $set: { hall: { name: hallName, hallId: hallId }, isHallProvost: true } })
+        // console.log(output)
 
         return res.status(200).json({
             status: "success",

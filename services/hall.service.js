@@ -9,3 +9,8 @@ exports.findStudentInhallService = async (id) => {
     const result = await Hall.findOne({ studentsIds: { $elemMatch: { $eq: id } } });
     return result;
 }
+
+exports.getHallsService = async (id) => {
+    const result = await Hall.find({}).select('name codeName');
+    return result;
+}

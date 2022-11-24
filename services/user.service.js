@@ -40,7 +40,13 @@ exports.findUserByToken = async (token) => {
 };
 
 exports.addTeacherService = async (_id, department) => {
+
     const result = await User.updateOne({ _id }, { $set: { isTeacher: true, department: department } })
+    return result;
+}
+exports.removeTeacherService = async (_id, department) => {
+
+    const result = await User.updateOne({ _id }, { $set: { isTeacher: false, department: '' } })
     return result;
 }
 

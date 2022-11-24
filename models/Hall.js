@@ -17,6 +17,7 @@ const hallSchema = mongoose.Schema({
         lowercase: true,
         minLength: 3,
         maxLength: 100,
+        unique: true,
         required: true,
     },
     email: {
@@ -38,9 +39,9 @@ const hallSchema = mongoose.Schema({
         name: {
             type: String,
         },
-        profileId: {
+        userId: {
             type: ObjectId,
-            ref: 'profile'
+            ref: 'user'
         }
     },
     studentsIds: [{
