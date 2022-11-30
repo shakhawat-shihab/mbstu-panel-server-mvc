@@ -5,6 +5,12 @@ const router = express.Router();
 
 router.get('/', userController.getUser);
 router.get("/signup/confirmation/:token", userController.confirmEmail);
+
+router.get("/create-reset-password-link/:email", userController.createResetPasswordLink);
+router.put("/reset-password/:token", userController.resetPassword);
+
+router.put("/change-password", verifyToken, userController.changePassword);
+
 router.post('/signup', userController.signUp);
 router.post('/login', userController.logIn);
 router.get('/me', verifyToken, userController.getMe);

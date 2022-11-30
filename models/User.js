@@ -86,8 +86,13 @@ const userSchema = mongoose.Schema({
             type: ObjectId
         }
     },
+
     confirmationToken: String,
     confirmationTokenExpires: Date,
+
+    resetPasswordToken: String,
+    resetPasswordTokenExpires: Date,
+
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
@@ -111,9 +116,26 @@ userSchema.pre("save", function (next) {
 });
 
 userSchema.methods.comparePassword = function (planePassword, hashPassword) {
+    // console.log(planePassword, hashPassword, bcrypt.compareSync(planePassword, hashPassword))
     const isPasswordValid = bcrypt.compareSync(planePassword, hashPassword);
     return isPasswordValid
 }
+
+//reset password
+userSchema.methods.resetPassword = function (password) {
+    this.password = password;
+    this.status = 'active';
+    this.confirmationToken = undefined;
+    this.confirmationTokenExpires = undefined;
+    // this.resetPasswordToken = undefined;
+    // this.resetPasswordTokenExpires = undefined;
+}
+
+//change password
+userSchema.methods.changePassword = function (password) {
+    this.password = password;
+}
+
 
 // for mail verification
 userSchema.methods.generateConfirmationToken = function () {
@@ -122,6 +144,16 @@ userSchema.methods.generateConfirmationToken = function () {
     const date = new Date();
     date.setDate(date.getDate() + 1);
     this.confirmationTokenExpires = date;
+    return token;
+};
+
+// for password reset
+userSchema.methods.generateResetPasswordToken = function () {
+    const token = crypto.randomBytes(32).toString("hex");
+    this.resetPasswordToken = token;
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    this.resetPasswordTokenExpires = date;
     return token;
 };
 

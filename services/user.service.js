@@ -39,13 +39,15 @@ exports.findUserByToken = async (token) => {
     return await User.findOne({ confirmationToken: token });
 };
 
-exports.addTeacherService = async (_id, department) => {
+exports.findUserByPasswordResetToken = async (token) => {
+    return await User.findOne({ resetPasswordToken: token });
+};
 
+exports.addTeacherService = async (_id, department) => {
     const result = await User.updateOne({ _id }, { $set: { isTeacher: true, department: department } })
     return result;
 }
 exports.removeTeacherService = async (_id, department) => {
-
     const result = await User.updateOne({ _id }, { $set: { isTeacher: false, department: '' } })
     return result;
 }

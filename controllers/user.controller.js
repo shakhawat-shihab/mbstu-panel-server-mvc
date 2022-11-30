@@ -1,4 +1,4 @@
-const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService, addAcademicCommitteeService, getDeptChairmanService, removeAcademicCommitteeService, removeTeacherService } = require("../services/user.service");
+const { getUserService, signUpService, logInService, findUserByEmailService, findUserByToken, findUserByEmailExceptPasswordService, findUserLikeEmailExceptPasswordService, addTeacherService, getTeacherByDeptService, addDeptChairmanService, addAcademicCommitteeService, getDeptChairmanService, removeAcademicCommitteeService, removeTeacherService, findUserByPasswordResetToken } = require("../services/user.service");
 const User = require("../models/User");
 const { generateToken } = require("../utils/token");
 const { sendMailWithGmail } = require("../utils/email");
@@ -490,10 +490,23 @@ exports.addHallProvost = async (req, res, next) => {
 
         const { hallCode, userId } = req.params;
 
+
         //1
         //get hall data
         const hallDetails = await Hall.findOne({ codeName: hallCode });
         // console.log(hallDetails)
+
+
+        // 1-1
+        //check if the user is already a hall provost of any hall (in our project, one user can be one hall's provost)
+        const user = await User.findOne({ _id: userId }).populate('profile');
+        if (user?.isHallProvost) {
+            return res.status(400).json({
+                status: "fail",
+                message: "This user is already an hall provost",
+            });
+        }
+
 
         //2
         //erase hall info from current provost (if exist)
@@ -508,28 +521,9 @@ exports.addHallProvost = async (req, res, next) => {
 
         //4
         // update the provost info in the hall
-        const user = await User.findOne({ _id: userId }).populate('profile');
+        // const user = await User.findOne({ _id: userId }).populate('profile');
         const result = await Hall.updateOne({ _id: hallDetails?._id }, { $set: { hallProvost: { name: user?.profile?.firstName + ' ' + user?.profile?.lastName, userId: userId } } })
 
-
-
-        // //get current hall Provost
-        // const currentHallProvost = hall.hallProvost;
-        // console.log('currentHallProvost ', currentHallProvost)
-
-        // //update user ====>> remove the hall info from current hall provost user info
-        // const o = await User.updateOne({ profile: currentHallProvost?.profileId }, { $set: { hall: {}, isHallProvost: false } })
-        // console.log(o)
-
-        // //set new hall provost
-        // hall.setHallProvost({ name: hallProvostName, profileId: hallProvostProfileId });
-        // const result = await hall.save()
-        // // console.log(result)
-
-
-        // ////add the hall info to current hall provost user info
-        // const output = await User.updateOne({ profile: hallProvostProfileId }, { $set: { hall: { name: hallName, hallId: hallId }, isHallProvost: true } })
-        // console.log(output)
 
         return res.status(200).json({
             status: "success",
@@ -544,3 +538,152 @@ exports.addHallProvost = async (req, res, next) => {
         });
     }
 }
+
+
+
+exports.createResetPasswordLink = async (req, res, next) => {
+    try {
+        const { email } = req.params;
+
+        const user = await findUserByEmailService(email);
+
+
+        if (!user) {
+            return res.status(400).json({
+                status: "fail",
+                message: "There is no user with this email",
+            });
+        }
+
+        // generate reset password token
+        const token = user.generateResetPasswordToken();
+        const result = await user.save({ validateBeforeSave: false });
+        // console.log('result ', result);
+
+
+
+        const mailData = {
+            to: [email],
+            subject: "Reset Your Password for MBSTU Academic Panel",
+            // text: `Thank you for sending your request to reset password. Please reset  your password by clicking the link: ${req.protocol
+            //     }://${req.get("host")}/api/v1/user/reset-password/${token}`,
+            text: `Thank you for sending your request to reset password. Please reset  your password by clicking the link: ${process.env.frontEnd}/reset-password/${email}/${token}`,
+        };
+
+        await sendMailWithGmail(mailData)
+
+        console.log('mail ==> ', mailData)
+        console.log('req.protocol ==>', req.protocol)
+        console.log('req.get("host") ==>', req.get("host"))
+        console.log('req.originalUrl ==>', req.originalUrl)
+
+        res.status(200).json({
+            status: "success",
+            message: "Password reset link is mailed to your account",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to reset password",
+            error: error.message,
+        });
+    }
+}
+
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const { token } = req.params;
+        const { email, password, confirmPassword } = req.body;
+        const user = await findUserByPasswordResetToken(token);
+        // console.log(req.body);
+
+        if (password != confirmPassword) {
+            return res.status(401).json({
+                status: "fail",
+                message: "Password mismatched."
+            });
+        }
+
+        if (!user) {
+            return res.status(403).json({
+                status: "fail",
+                message: "Invalid token."
+            });
+        }
+
+        const expired = new Date() > new Date(user.confirmationTokenExpires);
+        if (expired) {
+            return res.status(401).json({
+                status: "fail",
+                message: "Token expired."
+            });
+        }
+
+        // console.log(user?.email, email)
+        if (user?.email != email) {
+            return res.status(401).json({
+                status: "fail",
+                message: "You are not permitted to use these token."
+            });
+        }
+
+        user.resetPassword(password);
+        await user.save({ validateBeforeSave: false });
+
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully reset the password",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to reset the password",
+            error: error.message,
+        });
+    }
+}
+
+
+exports.changePassword = async (req, res, next) => {
+    try {
+        const { password, confirmPassword } = req.body;
+        const email = req.user.email;
+
+        const user = await findUserByEmailService(email);
+        // console.log(req.body);
+
+        if (!user) {
+            return res.status(401).json({
+                status: "fail",
+                message: "Can't recognize you."
+            });
+        }
+
+        if (password != confirmPassword) {
+            return res.status(401).json({
+                status: "fail",
+                message: "Password mismatched."
+            });
+        }
+
+        user.resetPassword(password);
+        await user.save({ validateBeforeSave: false });
+
+        return res.status(200).json({
+            status: "success",
+            message: "Successfully changed the password",
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Failed to change password",
+            error: error.message,
+        });
+    }
+}
+
+
