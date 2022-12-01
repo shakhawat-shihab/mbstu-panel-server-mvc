@@ -127,8 +127,8 @@ userSchema.methods.resetPassword = function (password) {
     this.status = 'active';
     this.confirmationToken = undefined;
     this.confirmationTokenExpires = undefined;
-    // this.resetPasswordToken = undefined;
-    // this.resetPasswordTokenExpires = undefined;
+    this.resetPasswordToken = undefined;
+    this.resetPasswordTokenExpires = undefined;
 }
 
 //change password

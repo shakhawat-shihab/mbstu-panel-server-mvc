@@ -32,12 +32,12 @@ exports.signUp = async (req, res, next) => {
         const user = await signUpService(req.body);
         const token = user.generateConfirmationToken();
         await user.save({ validateBeforeSave: false });
+
         // const mailData = {
         //     to: [user.email],
-        //     subject: "Verify your Account For ACC Job Portal",
+        //     subject: "Verify your Account For MBSTU Academic Panel",
         //     text: `Thank you for creating your account. Please confirm your account here: ${req.protocol
         //         }://${req.get("host")}${req.originalUrl}/confirmation/${token}`,
-
         // };
         // await sendMailWithGmail(mailData)
 
@@ -573,9 +573,9 @@ exports.createResetPasswordLink = async (req, res, next) => {
         await sendMailWithGmail(mailData)
 
         console.log('mail ==> ', mailData)
-        console.log('req.protocol ==>', req.protocol)
-        console.log('req.get("host") ==>', req.get("host"))
-        console.log('req.originalUrl ==>', req.originalUrl)
+        // console.log('req.protocol ==>', req.protocol)
+        // console.log('req.get("host") ==>', req.get("host"))
+        // console.log('req.originalUrl ==>', req.originalUrl)
 
         res.status(200).json({
             status: "success",
