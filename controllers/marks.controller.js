@@ -138,7 +138,7 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
             });
         }
 
-        const validProperty = ['theoryAttendance', 'theoryCT1', 'theoryCT2', 'theoryCT3', 'theoryFinal', 'labAttendance', 'labReport', 'labQuiz', 'projectClassPerformance', 'projectClassPerformanceBy', 'projectClassPerformanceByProfileId'];
+        const validProperty = ['theoryAttendance', 'theoryCT1', 'theoryCT2', 'theoryCT3', 'theoryFinal', 'labAttendance', 'labReport', 'labQuiz', 'projectClassPerformance', 'projectInternalMarks', 'projectClassPerformanceBy', 'projectClassPerformanceByProfileId'];
         if (!validProperty.includes(propertyName)) {
             return res.status(400).json({
                 status: "fail",
@@ -159,7 +159,7 @@ exports.updateMarksCourseTeacher = async (req, res, next) => {
             });
         }
 
-        if (type?.type == 'project' && (propertyName != 'projectClassPerformance')) {
+        if (type?.type == 'project' && (propertyName != 'projectClassPerformance' && propertyName != 'projectInternalMarks')) {
             return res.status(400).json({
                 status: "fail",
                 message: "You are trying to add invalid property to project course",

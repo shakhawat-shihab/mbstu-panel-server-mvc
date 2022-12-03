@@ -67,7 +67,7 @@ exports.publishResultStateChangeSemesterService = async (semesterId) => {
 
 exports.getCoursesPreviousRunningSemesterService = async (semesterCode, dept, profileId, date) => {
     semesterCode = parseInt(semesterCode);
-    // console.log(semesterCode, dept);
+    // console.log('semesterCode = ', semesterCode, ' and dept = ', dept);
     const result = await Semester.aggregate([
         { $match: { "semesterCode": { $lte: semesterCode }, "registrationCloseDate": { $gte: date }, "department": dept, "isRunning": true } },
         { $lookup: { from: 'marks', localField: 'coursesMarks', foreignField: '_id', as: 'course' } },
@@ -178,6 +178,7 @@ exports.getMarksOfCurrentSemesterService = async (semesterId) => {
                         labExperiment: "$studentsMarks.labExperiment",
                         labExperimentBy: "$studentsMarks.labExperimentBy",
                         projectClassPerformance: "$studentsMarks.projectClassPerformance",
+                        projectInternalMarks: "$studentsMarks.projectInternalMarks",
                         projectClassPerformanceBy: "$studentsMarks.projectClassPerformanceBy",
                         projectClassPerformanceByProfileId: "$studentsMarks.projectClassPerformanceByProfileId",
                         projectPresentation: "$studentsMarks.projectPresentation",

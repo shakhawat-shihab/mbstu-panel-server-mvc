@@ -143,10 +143,14 @@ const marksSchema = mongoose.Schema({
         },
         projectClassPerformance: {
             type: Number,
-            max: 70
+            max: 20
         },
         projectClassPerformanceBy: {
             type: String,
+        },
+        projectInternalMarks: {
+            type: Number,
+            max: 50
         },
         projectClassPerformanceByProfileId: {
             type: ObjectId,

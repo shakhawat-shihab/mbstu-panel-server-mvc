@@ -22,6 +22,7 @@ exports.createProjectApplication = async (req, res, next) => {
 exports.getProjectCourses = async (req, res, next) => {
     try {
         const { profileId, department } = req.user;
+        // console.log('profileId = ', profileId, '& department = ', department)
         const courses = await getProjectCoursesService(profileId, department)
         res.status(200).json({
             status: "success",

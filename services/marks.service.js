@@ -44,7 +44,7 @@ exports.getMarksCourseTeacherService = async (_id, type = null) => {
 
     else if (type == 'project') {
         result = await Marks.findOne({ _id })
-            .select('studentsMarks.id teacherList isSubmittedByProjectTeacher teacherStudentMap type courseTitle courseCode credit isSubmittedByCourseTeacher isSubmittedBySecondExaminer  isSubmittedByThirdExamier studentsMarks.projectClassPerformance  studentsMarks.studentProfileId')
+            .select('studentsMarks.id teacherList isSubmittedByProjectTeacher teacherStudentMap type courseTitle courseCode credit isSubmittedByCourseTeacher isSubmittedBySecondExaminer  isSubmittedByThirdExamier studentsMarks.projectClassPerformance studentsMarks.projectInternalMarks  studentsMarks.studentProfileId')
             .populate({ path: 'studentsMarks.studentProfileId', select: 'firstName lastName ' })
             .populate({ path: 'semesterId', select: 'semesterCode name degree' })
     }

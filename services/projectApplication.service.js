@@ -12,11 +12,11 @@ exports.getProjectCoursesService = async (studentProfileId, department) => {
     // console.log(studentProfileId, department);
     //get semester code
     const data = await getStudentResultService(studentProfileId);
-    // console.log(data);
+    // console.log(' getStudentResultService =>  ', data);
     // get courses of running semester
     const date = new Date();
-    const result = await getCoursesPreviousRunningSemesterService(data?.semesterCode, department, studentProfileId, date)
-    // console.log(result);
+    const result = await getCoursesPreviousRunningSemesterService(data?.semesterCode + 1, department, studentProfileId, date)
+    // console.log('getCoursesPreviousRunningSemesterService => ', result);
     const arrayOfProjectCourse = [];
     result?.map(x => {
         if (x.type == 'project') {
