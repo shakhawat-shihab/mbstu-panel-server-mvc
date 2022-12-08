@@ -8,6 +8,18 @@ const { createStudentResultService } = require("../services/studentsResult.servi
 const { findStudentInhallServic, findStudentInhallService } = require("../services/hall.service");
 const Hall = require("../models/Hall");
 
+// const mailFormat = `
+// <div>
+//     <p>
+//         Hello from MBSTU Academic Panel: 
+//     </p>
+//     <p>
+//         You are receiving this email because you are trying to register nto MBSTU Academic Panel
+//     </p>
+//     <p>Please confirm your account here: ${req.protocol}://${req.get("host")}${req.originalUrl}/confirmation/${token}</p>
+// </div>
+// `;
+
 
 exports.getUser = async (req, res, next) => {
     try {
@@ -33,11 +45,30 @@ exports.signUp = async (req, res, next) => {
         const token = user.generateConfirmationToken();
         await user.save({ validateBeforeSave: false });
 
+        const mailFormat = `
+    Hello, from MBSTU Academic Panel. 
+
+    You are receiving this email as you are trying to register into MBSTU Academic Panel. 
+
+    Please confirm your account here: ${req.protocol}://${req.get("host")}${req.originalUrl}/confirmation/${token}
+
+    Thank you from MBSTU Academic Panel.
+        `;
+
+        // const mailFormat = `Thank you for creating your account. Please confirm your account here: ${req.protocol
+        //     }://${req.get("host")}${req.originalUrl}/confirmation/${token}`
+
+        const mailData = {
+            to: [user.email],
+            subject: "Verify your Account For MBSTU Academic Panel",
+            text: mailFormat,
+        };
+        await sendMailWithGmail(mailData)
+
         // const mailData = {
         //     to: [user.email],
         //     subject: "Verify your Account For MBSTU Academic Panel",
-        //     text: `Thank you for creating your account. Please confirm your account here: ${req.protocol
-        //         }://${req.get("host")}${req.originalUrl}/confirmation/${token}`,
+        //     text: mailFormat
         // };
         // await sendMailWithGmail(mailData)
 
@@ -567,7 +598,8 @@ exports.createResetPasswordLink = async (req, res, next) => {
             subject: "Reset Your Password for MBSTU Academic Panel",
             // text: `Thank you for sending your request to reset password. Please reset  your password by clicking the link: ${req.protocol
             //     }://${req.get("host")}/api/v1/user/reset-password/${token}`,
-            text: `Thank you for sending your request to reset password. Please reset  your password by clicking the link: ${process.env.frontEnd}/reset-password/${email}/${token}`,
+            text: `Thank you for sending your request to reset password. Please reset  your password here: ${process.env.frontEnd}/reset-password/${email}/${token}
+            `,
         };
 
         await sendMailWithGmail(mailData)
@@ -685,5 +717,3 @@ exports.changePassword = async (req, res, next) => {
         });
     }
 }
-
-
