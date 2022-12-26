@@ -19,10 +19,10 @@ exports.initializeSSL = async (req, res) => {
         total_amount: amount,
         currency: 'BDT',
         tran_id: tran_id, // use unique tran_id for each api call
-        success_url: 'http://localhost:5000/api/v1/payment/success',
-        fail_url: 'http://localhost:5000/api/v1/payment/fail',
-        cancel_url: 'http://localhost:5000/api/v1/payment/cancel',
-        ipn_url: 'http://localhost:5000/api/v1/payment/ipn',
+        success_url: `${process.env.backEnd}/api/v1/payment/success`,
+        fail_url: `${process.env.backEnd}/api/v1/payment/fail`,
+        cancel_url: `${process.env.backEnd}/api/v1/payment/cancel`,
+        ipn_url: `${process.env.backEnd}/api/v1/payment/ipn`,
         shipping_method: 'Courier',
         product_name: 'Computer.',
         product_category: 'Electronic',
@@ -80,7 +80,7 @@ exports.successSSL = async (req, res) => {
 
     const findApplicationWithtran_id = await CourseApplication.findOne({ paymentId: payment?._id })
     console.log('findApplicationWithtran_id ', findApplicationWithtran_id)
-    res.redirect(`http://localhost:3000/dashboard/course-registration-view/${findApplicationWithtran_id?._id}`)
+    res.redirect(`${process.env.frontEnd}/dashboard/course-registration-view/${findApplicationWithtran_id?._id}`)
     // res.status(400).json({
     //     message: "SSL success"
     // })
@@ -88,9 +88,9 @@ exports.successSSL = async (req, res) => {
 
 exports.failureSSL = async (req, res) => {
     // const result = await orderCollection.deleteOne({ tran_id: req.body.tran_id })
-    // res.redirect(`http://localhost:3000`)
+    // res.redirect(`${process.env.frontEnd}`)
     console.log('failure')
-    res.redirect(`http://localhost:3000/dashboard/course-registration-view`)
+    res.redirect(`${process.env.frontEnd}/dashboard/course-registration-view`)
     // res.status(400).json({
     //     message: "SSL failure"
     // })
@@ -98,9 +98,9 @@ exports.failureSSL = async (req, res) => {
 
 exports.cancelSSL = async (req, res) => {
     // const result = await orderCollection.deleteOne({ tran_id: req.body.tran_id })
-    // res.redirect(`http://localhost:3000`)
+    // res.redirect(`${process.env.frontEnd}`)
     console.log('cancel')
-    res.redirect(`http://localhost:3000/dashboard/course-registration-view`)
+    res.redirect(`${process.env.frontEnd}/dashboard/course-registration-view`)
     // res.status(400).json({
     //     message: "SSL cancel"
     // })
@@ -110,7 +110,7 @@ exports.ipnSSL = async (req, res) => {
     // console.log(req.body)
     // res.send(req.body);
     console.log('ipn')
-    res.redirect(`http://localhost:3000/dashboard/course-registration-view`)
+    res.redirect(`${process.env.frontEnd}/dashboard/course-registration-view`)
     // res.status(400).json({
     //     message: "SSL ipn"
     // })

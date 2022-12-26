@@ -598,8 +598,7 @@ exports.createResetPasswordLink = async (req, res, next) => {
             subject: "Reset Your Password for MBSTU Academic Panel",
             // text: `Thank you for sending your request to reset password. Please reset  your password by clicking the link: ${req.protocol
             //     }://${req.get("host")}/api/v1/user/reset-password/${token}`,
-            text: `Thank you for sending your request to reset password. Please reset  your password here: ${process.env.frontEnd}/reset-password/${email}/${token}
-            `,
+            text: `Thank you for sending your request to reset password. Please reset  your password here: ${process.env.frontEnd}/reset-password/${email}/${token}`,
         };
 
         await sendMailWithGmail(mailData)
