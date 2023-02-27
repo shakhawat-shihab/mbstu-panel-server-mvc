@@ -1,8 +1,8 @@
 # Feature this project #
 
 ### User registration ###
--**Profile edit**
--**Password reset**
+ - [x] **Profile edit**
+ - [x] **Password reset**
 -**Role based authorization**
 -**JWT token implementation**
 
