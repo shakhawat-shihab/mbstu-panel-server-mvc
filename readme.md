@@ -1,41 +1,42 @@
 # Feature this project #
 
 ### User registration ###
- - [x] **Profile edit**
+ - [x] **Create account**
+ - [x] **Profile edit with image upload**
  - [x] **Password reset**
--**Role based authorization**
--**JWT token implementation**
+ - [x] **Role based authorization**
+ - [x] **JWT token implementation**
 
 
 ### Student ###
-**Course registartion**
-**Project application **
+ - [x] **Course registartion**
+ - [x] **Project application **
 
 
 ### Teacher ###
-**Take a course**
-**Assign marks**
+ - [x] **Take a course**
+ - [x] **Assign marks**
 
 
 ### Exam Committee ###
-**Check marks**
-**Generate final marksheet**
-**Publish Result**
+ - [x] **Check marks**
+ - [x] **Generate final marksheet**
+ - [x] **Publish Result**
 
 
 
 ### Department Chairman ###
-**Approve course registration**
-**Create Semester**
+ - [x] **Approve course registration**
+ - [x] **Create Semester**
 
 
 ### Hall Provost ###
-**Approve application of student**
+ - [x] **Approve application of student**
 
 
 
 ### Academic Committee ###
-**Check payment**
-** Approve Admit Card **
+ - [x] **Check payment**
+ - [x] ** Approve Admit Card **
 
 
